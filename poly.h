@@ -67,6 +67,8 @@ public:
     virtual polynomial operator*(const int) const;
     virtual polynomial operator%(const polynomial&);
 
+    polynomial &operator=(const polynomial &other);
+
     // template <typename Item>
     // polynomial &operator+(const Item &other);
 

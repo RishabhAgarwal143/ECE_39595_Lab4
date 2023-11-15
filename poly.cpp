@@ -5,14 +5,14 @@ polynomial::polynomial(){
     this->poly.push_back(pair1);
 }
 
-template <typename Iter>
-polynomial::polynomial(Iter begin, Iter end){
+// template <typename Iter>
+// polynomial::polynomial(Iter begin, Iter end){
     
-    delete this->poly
-    while(begin != end){
+//     delete this->poly
+//     while(begin != end){
 
-    }
-}
+//     }
+// }
 
 
 polynomial::polynomial(const polynomial &other){
@@ -20,14 +20,10 @@ polynomial::polynomial(const polynomial &other){
 }
 
 
-void polynomial::print() const{
+// void polynomial::print() const{
 
-}
+// }
 
-
-polynomial &polynomial::operator=(const polynomial &other){
-
-}
 
 polynomial polynomial::operator+(const polynomial &other){
 
@@ -86,9 +82,21 @@ polynomial polynomial::operator*(const int other) const{
     return polynomial(new_poly.begin(), new_poly.end());
 }
 
-// polynomial polynomial::operator%(const polynomial &other) { 
+polynomial polynomial::operator%(const polynomial &divisor) {
+    // do mod division of this by other
+    // return the remainder
+
+    std::vector<std::pair<power, coeff>> new_poly;
+
+    std::vector<std::pair<power, coeff>>::iterator it1 = this->poly.begin();
+    std::vector<std::pair<power, coeff>>::const_iterator it2 = divisor.poly.begin();
+
+    if (it1->first < it2->first){
+        return polynomial(new_poly.begin(), new_poly.end());
+    }
+
     
-// }
+}
 
 
 size_t polynomial::find_degree_of(){
