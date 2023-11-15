@@ -58,6 +58,11 @@ public:
      */
     polynomial &operator=(const polynomial &other);
 
+    polynomial &operator+(const polynomial &other);
+
+    polynomial &operator-(const polynomial &other);
+    
+    polynomial &operator%(const polynomial &other);
 
     /**
      * Overload the +, * and % operators. The function prototypes are not
