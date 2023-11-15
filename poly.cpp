@@ -25,6 +25,19 @@ polynomial &polynomial::operator=(const polynomial &other){
 
 }
 
+polynomial &polynomial::operator+(const polynomial &other){
+    
+}
+
+polynomial &polynomial::operator-(const polynomial &other){
+
+}
+
+polynomial &polynomial::operator%(const polynomial &other){
+
+}
+
+
 
 size_t polynomial::find_degree_of(){
 
