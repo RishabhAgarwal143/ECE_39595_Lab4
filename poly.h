@@ -10,6 +10,10 @@ using coeff = int;
 
 class polynomial
 {
+private:
+    int degree_of_poly;
+    std::vector<std::pair<power, coeff>> poly;
+
 
 public:
     /**
@@ -62,7 +66,7 @@ public:
     polynomial &operator+(const Item &other);
 
     template <typename Item>
-    polynomial &operator-(const Item &other);
+    polynomial &operator*(const Item &other);
     
     template <typename Item>
     polynomial &operator%(const Item &other);
