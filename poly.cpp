@@ -38,7 +38,9 @@ polynomial::polynomial(Iter begin, Iter end){
 
 
 polynomial::polynomial(const polynomial &other){
-
+    for (auto i: other.poly){
+        this->poly.push_back(i);
+    }
 }
 
 
@@ -51,7 +53,10 @@ void polynomial::print() const{
 
 
 polynomial &polynomial::operator=(const polynomial &other){
-
+    this->poly.clear();
+    for (auto i: other.poly){
+        this->poly.push_back(i);
+    }
     return *this;
 }
 
