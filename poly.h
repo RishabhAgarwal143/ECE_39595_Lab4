@@ -60,16 +60,23 @@ public:
      * @return
      * A reference to the copied polynomial
      */
-    polynomial &operator=(const polynomial &other);
 
-    template <typename Item>
-    polynomial &operator+(const Item &other);
+    virtual polynomial operator+(const polynomial&); 
+    virtual polynomial operator+(const int) const;
+    virtual polynomial operator-(const polynomial&); 
+    virtual polynomial operator-(const int) const;
+    virtual polynomial operator*(const polynomial&);
+    virtual polynomial operator*(const int) const;
+    virtual polynomial operator%(const polynomial&);
 
-    template <typename Item>
-    polynomial &operator*(const Item &other);
+    // template <typename Item>
+    // polynomial &operator+(const Item &other);
+
+    // template <typename Item>
+    // polynomial &operator*(const Item &other);
     
-    template <typename Item>
-    polynomial &operator%(const Item &other);
+    // template <typename Item>
+    // polynomial &operator%(const Item &other);
 
     /**
      * Overload the +, * and % operators. The function prototypes are not
@@ -120,5 +127,20 @@ public:
      */
     std::vector<std::pair<power, coeff>> canonical_form() const;
 };
+
+polynomial operator+(const polynomial&, const polynomial&); 
+polynomial operator+ (int arg1, const polynomial& arg2);
+polynomial operator+ (const polynomial& arg1, int arg2);
+
+polynomial operator- (const polynomial& arg1, const polynomial& arg2);
+polynomial operator- (int arg1, const polynomial& arg2);
+polynomial operator- (const polynomial& arg1, int arg2);
+
+polynomial operator* (const polynomial& arg1, const polynomial& arg2);
+polynomial operator* (int arg1, const polynomial& arg2);
+polynomial operator* (const polynomial& arg1, int arg2);
+
+polynomial operator% (const polynomial& arg1, const polynomial& arg2);
+
 
 #endif
