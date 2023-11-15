@@ -58,11 +58,14 @@ public:
      */
     polynomial &operator=(const polynomial &other);
 
-    polynomial &operator+(const polynomial &other);
+    template <typename Item>
+    polynomial &operator+(const Item &other);
 
-    polynomial &operator-(const polynomial &other);
+    template <typename Item>
+    polynomial &operator-(const Item &other);
     
-    polynomial &operator%(const polynomial &other);
+    template <typename Item>
+    polynomial &operator%(const Item &other);
 
     /**
      * Overload the +, * and % operators. The function prototypes are not

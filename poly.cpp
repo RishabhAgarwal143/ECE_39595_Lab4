@@ -24,16 +24,17 @@ void polynomial::print() const{
 polynomial &polynomial::operator=(const polynomial &other){
 
 }
-
-polynomial &polynomial::operator+(const polynomial &other){
+template <typename Item>
+polynomial &polynomial::operator+(const Item &other){
     
 }
-
-polynomial &polynomial::operator-(const polynomial &other){
+template <typename Item>
+polynomial &polynomial::operator-(const Item &other){
 
 }
 
-polynomial &polynomial::operator%(const polynomial &other){
+template <typename Item>
+polynomial &polynomial::operator%(const Item &other){
 
 }
 
