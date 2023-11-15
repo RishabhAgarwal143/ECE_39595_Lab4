@@ -10,12 +10,8 @@ using coeff = int;
 
 class polynomial
 {
-private:
-    int degree_of_poly;
-    std::vector<std::pair<power, coeff>> poly;
-
-
 public:
+    std::vector<std::pair<power, coeff>> poly;
     /**
      * @brief Construct a new polynomial object that is the number 0 (ie. 0x^0)
      *

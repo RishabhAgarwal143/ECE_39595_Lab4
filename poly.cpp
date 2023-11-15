@@ -1,18 +1,40 @@
 #include "poly.h"
+#include <iostream>
 
 polynomial::polynomial(){
     std::pair<power, coeff> pair1 = std::make_pair(0, 0);
     this->poly.push_back(pair1);
 }
 
-// template <typename Iter>
-// polynomial::polynomial(Iter begin, Iter end){
+template <typename Iter>
+polynomial::polynomial(Iter begin, Iter end){
     
-//     delete this->poly
-//     while(begin != end){
+    if(begin == end){
+        this->poly.push_back(*begin);
+        begin++;
+        return;
+    }
+    this->poly.push_back(*begin);
+    begin++;
 
-//     }
-// }
+    while(begin != end){
+
+        auto temp = this->poly.begin();
+        auto temp2 = this->poly.end();
+        while(temp != temp2){
+            if(temp->first < begin->first){
+                this->poly.insert(temp,*begin);
+                break;
+            }
+            temp++;
+        }
+        if(temp == temp2){
+            this->poly.push_back(*begin);
+        }
+        begin++;
+    }
+
+}
 
 
 polynomial::polynomial(const polynomial &other){
@@ -20,10 +42,18 @@ polynomial::polynomial(const polynomial &other){
 }
 
 
-// void polynomial::print() const{
+void polynomial::print() const{
+    for (auto items: this->poly){
+        std::cout << items.second << "x^" << items.first << " + ";
+    }
+    std::cout << "|END|" <<std::endl;
+}
 
-// }
 
+polynomial &polynomial::operator=(const polynomial &other){
+
+    return *this;
+}
 
 polynomial polynomial::operator+(const polynomial &other){
 
@@ -100,5 +130,9 @@ polynomial polynomial::operator%(const polynomial &divisor) {
 
 
 size_t polynomial::find_degree_of(){
+    return this->poly.at(0).first;
+}
 
+std::vector<std::pair<power, coeff>> polynomial::canonical_form() const{
+    return this->poly;
 }
