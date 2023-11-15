@@ -63,8 +63,6 @@ public:
 
     virtual polynomial operator+(const polynomial&); 
     virtual polynomial operator+(const int) const;
-    virtual polynomial operator-(const polynomial&); 
-    virtual polynomial operator-(const int) const;
     virtual polynomial operator*(const polynomial&);
     virtual polynomial operator*(const int) const;
     virtual polynomial operator%(const polynomial&);
@@ -131,10 +129,6 @@ public:
 polynomial operator+(const polynomial&, const polynomial&); 
 polynomial operator+ (int arg1, const polynomial& arg2);
 polynomial operator+ (const polynomial& arg1, int arg2);
-
-polynomial operator- (const polynomial& arg1, const polynomial& arg2);
-polynomial operator- (int arg1, const polynomial& arg2);
-polynomial operator- (const polynomial& arg1, int arg2);
 
 polynomial operator* (const polynomial& arg1, const polynomial& arg2);
 polynomial operator* (int arg1, const polynomial& arg2);

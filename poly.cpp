@@ -68,6 +68,29 @@ polynomial polynomial::operator+(const int other) const{
     return polynomial(new_poly.begin(), new_poly.end());
 }
 
+polynomial polynomial::operator-(const polynomial &other){
+    std::vector<std::pair<power, coeff>> new_poly;
+    std::vector<std::pair<power, coeff>>::iterator it1 = this->poly.begin();
+    std::vector<std::pair<power, coeff>>::const_iterator it2 = other.poly.begin();
+
+    while(it1 != this->poly.end() && it2 != other.poly.end()){
+        if(it1->first == it2->first){
+            new_poly.push_back(std::make_pair(it1->first, it1->second - it2->second));
+            it1++;
+            it2++;
+        }
+        else if(it1->first > it2->first){
+            new_poly.push_back(std::make_pair(it1->first, it1->second));
+            it1++;
+        }
+        else{
+            new_poly.push_back(std::make_pair(it2->first, it2->second));
+            it2++;
+        }
+    }
+    return polynomial(new_poly.begin(), new_poly.end());
+}
+
 template <typename Item>
 polynomial &polynomial::operator*(const Item &other){
 
