@@ -90,12 +90,13 @@ polynomial polynomial::operator+(const int other) const{
         new_poly.push_back(std::make_pair(it->first, it->second));
     }
     auto back = this->poly.back();
-    if (back.first == 0){
+    if (back.first == 0) {
+        new_poly.pop_back();
+        new_poly.push_back(std::make_pair(0, back.second + other));
+    } else {
         new_poly.push_back(std::make_pair(0, other));
     }
-    else{
-        new_poly.push_back(std::make_pair(0, back.second + other));
-    }
+
     return polynomial(new_poly.begin(), new_poly.end());
 }
 
