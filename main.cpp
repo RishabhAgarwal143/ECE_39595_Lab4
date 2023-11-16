@@ -80,7 +80,18 @@ int main()
     polynomial result = p11 % p12;
     assert(result.canonical_form() == p1);
 
+    // Test case 2: Divisor is smaller than dividend
+    std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
+    std::vector<std::pair<power, coeff>> p4({{1, 1}, {0, 1}});
+    std::vector<std::pair<power, coeff>> expected({{0, 1}});
+    polynomial p31(p3.begin(), p3.end());
+    polynomial p41(p4.begin(), p4.end());
 
+    result = p31 % p41;
+    result.print();
+    // assert(result.canonical_form() == expected);
+
+    
 
     // // Test case 2: Divisor is smaller than dividend
     // std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
