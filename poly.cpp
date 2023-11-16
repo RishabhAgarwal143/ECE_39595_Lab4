@@ -188,7 +188,7 @@ polynomial polynomial::operator%(const polynomial &divisor) {
 
     std::vector<std::pair<power, coeff>> out = this->poly;
 
-    while (!out.empty() && out.begin()->first >= divisor.poly.begin()->first) {
+    while (!out.empty() && out.begin()->first > divisor.poly.begin()->first) {
         coeff coeffMult = out.begin()->second / divisor.poly.begin()->second;
         power pDiff = out.begin()->first - divisor.poly.begin()->first;
 
