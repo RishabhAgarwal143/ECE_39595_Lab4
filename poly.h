@@ -124,13 +124,13 @@ public:
     std::vector<std::pair<power, coeff>> canonical_form() const;
 };
 
-polynomial operator+(const polynomial&, const polynomial&); 
-polynomial operator+ (int arg1, const polynomial& arg2);
-polynomial operator+ (const polynomial& arg1, int arg2);
+// polynomial operator+(const polynomial&, const polynomial&); 
+// polynomial operator+ (int arg1, const polynomial& arg2);
+// polynomial operator+ (const polynomial& arg1, int arg2);
 
-polynomial operator* (const polynomial& arg1, const polynomial& arg2);
-polynomial operator* (int arg1, const polynomial& arg2);
-polynomial operator* (const polynomial& arg1, int arg2);
+// polynomial operator* (const polynomial& arg1, const polynomial& arg2);
+// polynomial operator* (int arg1, const polynomial& arg2);
+// polynomial operator* (const polynomial& arg1, int arg2);
 
 polynomial operator% (const polynomial& arg1, const polynomial& arg2);
 

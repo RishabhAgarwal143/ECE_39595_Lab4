@@ -150,8 +150,8 @@ polynomial polynomial::operator%(const polynomial &divisor) {
         power pDiff = out.begin()->first - divisor.poly.begin()->first;
 
         for (auto val: divisor.poly) {
-            int newCoeff = val.second * coeffMult;
-            int newPower = val.first + pDiff;
+            coeff newCoeff = val.second * coeffMult;
+            power newPower = val.first + pDiff;
 
             auto reduce = std::make_pair(newPower, newCoeff);
 
