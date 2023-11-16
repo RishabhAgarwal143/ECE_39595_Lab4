@@ -2,6 +2,7 @@
 #include <chrono>
 #include <optional>
 #include <vector>
+#include <cassert>
 
 #include "poly.h"
 
@@ -40,27 +41,72 @@ int main()
     // polynomial p2(poly_input.begin(), poly_input.end());
 
     // std::vector<std::pair<power, coeff>> poly_input1 = {{7, 1}};
-    std::vector<std::pair<power, coeff>> poly_input1 = {{10,-5}};
-    std::vector<std::pair<power, coeff>> poly_input2 = {{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}};
+    // std::vector<std::pair<power, coeff>> poly_input1 = {{10,-5}};
+    // std::vector<std::pair<power, coeff>> poly_input2 = {{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}};
 
     // std::vector<std::pair<power, coeff>> solution = {{4,1}, {2,2}, {0,1}};
     // std::vector<std::pair<power, coeff>> solution_mult = {{10,-8}, {9,16}, {8,-38}, {7, 16}, {6,-34}, {5,-17}, {4, 88}, {3,-35}, {2, -21}, {1, 26}, {0, -3}};
-    std::vector<std::pair<power, coeff>> solution_mod = {{3, 29}, {2, 18}, {0, 2}};
+    // std::vector<std::pair<power, coeff>> solution_mod = {{3, 29}, {2, 18}, {0, 2}};
+
+    // make testcases for mod 
+    // std::vector<std::pair<power, coeff>> poly_input1 = {{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}};
+    // std::vector<std::pair<power, coeff>> poly_input2 = {{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}};
+    // std::vector<std::pair<power, coeff>> solution_mod = {{3, 29}, {2, 18}, {0, 2}};
 
 
-    polynomial p1(poly_input1.begin(), poly_input1.end());
-    polynomial p2(poly_input2.begin(), poly_input2.end());
-    p1.print();
-    p2.print();
 
-    std::optional<double> result = poly_test(p1, p2, solution_mod);
 
-    if (result.has_value())
-    {
-        std::cout << "Passed test, took " << result.value()/1000 << " seconds" << std::endl;
-    } 
-    else 
-    {
-        std::cout << "Failed test" << std::endl;
+    // polynomial p1(poly_input1.begin(), poly_input1.end());
+    // polynomial p2(poly_input2.begin(), poly_input2.end());
+    // p1.print();
+    // p2.print();
+
+    // std::optional<double> result = poly_test(p1, p2, solution_mod);
+
+    // if (result.has_value())
+    // {
+    //     std::cout << "Passed test, took " << result.value()/1000 << " seconds" << std::endl;
+    // } 
+    // else 
+    // {
+    //     std::cout << "Failed test" << std::endl;
+    // }
+
+    // Test case 1: Divisor is larger than dividend
+    polynomial p1({{0, 1}});
+    polynomial p2({{1, 1}});
+    polynomial result = p1 % p2;
+    assert(result == p1);
+
+    // Test case 2: Divisor is smaller than dividend
+    polynomial p3({{2, 1}, {1, 2}, {0, 1}});
+    polynomial p4({{1, 1}, {0, 1}});
+    polynomial expected({{0, 1}});
+    result = p3 % p4;
+    assert(result == expected);
+
+    // Test case 3: Divisor is equal to dividend
+    polynomial p5({{2, 1}, {1, 2}, {0, 1}});
+    polynomial p6({{2, 1}, {1, 2}, {0, 1}});
+    expected = polynomial();
+    result = p5 % p6;
+    assert(result == expected);
+
+    // Test case 4: Dividend is zero polynomial
+    polynomial p7;
+    polynomial p8({{1, 1}});
+    expected = polynomial();
+    result = p7 % p8;
+    assert(result == expected);
+
+    // Test case 5: Divisor is zero polynomial
+    polynomial p9({{1, 1}});
+    polynomial p10;
+    try {
+        result = p9 % p10;
+    } catch (const std::invalid_argument& e) {
+        assert(std::string(e.what()) == "Division by zero polynomial");
     }
+
+    std::cout << "All tests passed!\n";
 }
