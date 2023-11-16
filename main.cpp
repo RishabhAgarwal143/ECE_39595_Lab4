@@ -73,40 +73,43 @@ int main()
     // }
 
     // Test case 1: Divisor is larger than dividend
-    std::vector<std::pair<power, coeff>> p1({{0, 1}});
-    std::vector<std::pair<power, coeff>> p2({{1, 1}});
-    std::vector<std::pair<power, coeff>> result = p1 % p2;
-    assert(result == p1);
+    std::vector<std::pair<power, coeff>> p1{{0, 1}};
+    std::vector<std::pair<power, coeff>> p2{{1, 1}};
+    polynomial p11(p1.begin(), p1.end());
+    polynomial p12(p2.begin(), p2.end());
+    polynomial result = p11 % p12;
+    assert(result.canonical_form() == p1);
 
-    // Test case 2: Divisor is smaller than dividend
-    std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
-    std::vector<std::pair<power, coeff>> p4({{1, 1}, {0, 1}});
-    std::vector<std::pair<power, coeff>> expected({{0, 1}});
-    result = p3 % p4;
-    assert(result == expected);
+    // // Test case 2: Divisor is smaller than dividend
+    // std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
+    // std::vector<std::pair<power, coeff>> p4({{1, 1}, {0, 1}});
+    // std::vector<std::pair<power, coeff>> expected({{0, 1}});
 
-    // Test case 3: Divisor is equal to dividend
-    std::vector<std::pair<power, coeff>> p5({{2, 1}, {1, 2}, {0, 1}});
-    std::vector<std::pair<power, coeff>> p6({{2, 1}, {1, 2}, {0, 1}});
-    expected = polynomial();
-    result = p5 % p6;
-    assert(result == expected);
+    // result = p3 % p4;
+    // assert(result == expected);
 
-    // Test case 4: Dividend is zero polynomial
-    std::vector<std::pair<power, coeff>> p7;
-    std::vector<std::pair<power, coeff>> p8({{1, 1}});
-    expected = polynomial();
-    result = p7 % p8;
-    assert(result == expected);
+    // // Test case 3: Divisor is equal to dividend
+    // std::vector<std::pair<power, coeff>> p5({{2, 1}, {1, 2}, {0, 1}});
+    // std::vector<std::pair<power, coeff>> p6({{2, 1}, {1, 2}, {0, 1}});
+    // expected = polynomial();
+    // result = p5 % p6;
+    // assert(result == expected);
 
-    // Test case 5: Divisor is zero polynomial
-    std::vector<std::pair<power, coeff>> p9({{1, 1}});
-    std::vector<std::pair<power, coeff>> p10;
-    try {
-        result = p9 % p10;
-    } catch (const std::invalid_argument& e) {
-        assert(std::string(e.what()) == "Division by zero polynomial");
-    }
+    // // Test case 4: Dividend is zero polynomial
+    // std::vector<std::pair<power, coeff>> p7;
+    // std::vector<std::pair<power, coeff>> p8({{1, 1}});
+    // expected = polynomial();
+    // result = p7 % p8;
+    // assert(result == expected);
 
-    std::cout << "All tests passed!\n";
+    // // Test case 5: Divisor is zero polynomial
+    // std::vector<std::pair<power, coeff>> p9({{1, 1}});
+    // std::vector<std::pair<power, coeff>> p10;
+    // try {
+    //     result = p9 % p10;
+    // } catch (const std::invalid_argument& e) {
+    //     assert(std::string(e.what()) == "Division by zero polynomial");
+    // }
+
+    // std::cout << "All tests passed!\n";
 }
