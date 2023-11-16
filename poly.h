@@ -57,11 +57,13 @@ public:
      * A reference to the copied polynomial
      */
 
-    virtual polynomial operator+(const polynomial&); 
-    virtual polynomial operator+(const int) const;
-    virtual polynomial operator*(const polynomial&);
-    virtual polynomial operator*(const int) const;
-    virtual polynomial operator%(const polynomial&);
+    polynomial operator+(const polynomial&); 
+    polynomial operator+(const int) const;
+    friend polynomial operator+(const int,const polynomial&);
+    polynomial operator*(const polynomial&);
+    polynomial operator*(const int) const;
+    friend polynomial operator*(const int,const polynomial&);
+    polynomial operator%(const polynomial&);
 
     polynomial &operator=(const polynomial &other);
 
@@ -132,7 +134,7 @@ public:
 // polynomial operator* (int arg1, const polynomial& arg2);
 // polynomial operator* (const polynomial& arg1, int arg2);
 
-polynomial operator% (const polynomial& arg1, const polynomial& arg2);
+// polynomial operator% (const polynomial& arg1, const polynomial& arg2);
 
 
 #endif
