@@ -130,11 +130,10 @@ polynomial polynomial::operator*(const int other) const{
 
     if (other == 0)
     {
-        std::vector<std::pair<power, coeff>> new_poly;
-        return polynomial(new_poly.begin(), new_poly.end());
+        polynomial p1;
+        return p1;
     }
     
-
     std::vector<std::pair<power, coeff>> new_poly;
     for(auto it = this->poly.begin(); it != this->poly.end(); it++){
         new_poly.push_back(std::make_pair(it->first, it->second * other));
