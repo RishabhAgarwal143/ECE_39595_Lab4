@@ -40,8 +40,8 @@ int main()
     // polynomial p2(poly_input.begin(), poly_input.end());
 
     // std::vector<std::pair<power, coeff>> poly_input1 = {{7, 1}};
-    std::vector<std::pair<power, coeff>> poly_input1 = {{4,2}, {3,-3}, {2, 5}, {1, 7}, {0, -1}};
-    std::vector<std::pair<power, coeff>> poly_input2 = {{6,-4}, {5,2}, {4, -6}, {3, 8}, {2, 1}, {1, -5}, {0, 3}};
+    std::vector<std::pair<power, coeff>> poly_input1 = {};
+    std::vector<std::pair<power, coeff>> poly_input2 = {{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}};
 
     // std::vector<std::pair<power, coeff>> solution = {{4,1}, {2,2}, {0,1}};
     // std::vector<std::pair<power, coeff>> solution_mult = {{10,-8}, {9,16}, {8,-38}, {7, 16}, {6,-34}, {5,-17}, {4, 88}, {3,-35}, {2, -21}, {1, 26}, {0, -3}};
@@ -50,6 +50,8 @@ int main()
 
     polynomial p1(poly_input1.begin(), poly_input1.end());
     polynomial p2(poly_input2.begin(), poly_input2.end());
+    p1.print();
+    p2.print();
 
     std::optional<double> result = poly_test(p1, p2, solution_mod);
 

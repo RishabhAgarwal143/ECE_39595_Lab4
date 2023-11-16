@@ -9,16 +9,20 @@ polynomial::polynomial(){
 template <typename Iter>
 polynomial::polynomial(Iter begin, Iter end){
     
+    
     if(begin == end){
-        this->poly.push_back(*begin);
-        begin++;
+        std::pair<power, coeff> pair1 = std::make_pair(0, 0);
+        this->poly.push_back(pair1);
         return;
     }
     this->poly.push_back(*begin);
     begin++;
 
     while(begin != end){
-
+        if(begin->second == 0){
+            begin++;
+            continue;
+        }
         auto temp = this->poly.begin();
         auto temp2 = this->poly.end();
         while(temp != temp2){
@@ -60,10 +64,10 @@ polynomial &polynomial::operator=(const polynomial &other){
     return *this;
 }
 
-polynomial polynomial::operator+(const polynomial &other){
+polynomial polynomial::operator+(const polynomial &other) const{
 
     std::vector<std::pair<power, coeff>> new_poly;
-    std::vector<std::pair<power, coeff>>::iterator it1 = this->poly.begin();
+    std::vector<std::pair<power, coeff>>::const_iterator it1 = this->poly.begin();
     std::vector<std::pair<power, coeff>>::const_iterator it2 = other.poly.begin();
 
     while(it1 != this->poly.end() && it2 != other.poly.end()){
@@ -100,7 +104,7 @@ polynomial polynomial::operator+(const int other) const{
     return polynomial(new_poly.begin(), new_poly.end());
 }
 
-polynomial polynomial::operator*(const polynomial &other){
+polynomial polynomial::operator*(const polynomial &other) const{
     std::vector<std::pair<power, coeff>> new_poly;
     for(auto it1 = this->poly.begin(); it1 != this->poly.end(); it1++){
         for(auto it2 = other.poly.begin(); it2 != other.poly.end(); it2++){
@@ -183,5 +187,6 @@ size_t polynomial::find_degree_of(){
 }
 
 std::vector<std::pair<power, coeff>> polynomial::canonical_form() const{
+    
     return this->poly;
 }

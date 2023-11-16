@@ -57,10 +57,11 @@ public:
      * A reference to the copied polynomial
      */
 
-    polynomial operator+(const polynomial&); 
+    polynomial operator+(const polynomial&) const; 
     polynomial operator+(const int) const;
     friend polynomial operator+(const int,const polynomial&);
-    polynomial operator*(const polynomial&);
+    
+    polynomial operator*(const polynomial&) const;
     polynomial operator*(const int) const;
     friend polynomial operator*(const int,const polynomial&);
     polynomial operator%(const polynomial&);
