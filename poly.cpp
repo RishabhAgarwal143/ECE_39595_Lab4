@@ -15,8 +15,13 @@ polynomial::polynomial(Iter begin, Iter end){
         this->poly.push_back(pair1);
         return;
     }
-    while(begin->second == 0){
+    while(begin->second == 0 && begin != end){
         begin++;
+    }
+    if(begin == end){
+        std::pair<power, coeff> pair1 = std::make_pair(0, 0);
+        this->poly.push_back(pair1);
+        return;
     }
     this->poly.push_back(*begin);
     begin++;
