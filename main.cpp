@@ -13,7 +13,7 @@ std::optional<double> poly_test(polynomial& p1,
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
     // polynomial p3 = p1 * p2;
-    polynomial p3 = p1 + 1 ;
+    polynomial p3 = p1 + p2;
 
     auto p3_can_form = p3.canonical_form();
 
@@ -40,7 +40,7 @@ int main()
     // polynomial p2(poly_input.begin(), poly_input.end());
 
     // std::vector<std::pair<power, coeff>> poly_input1 = {{7, 1}};
-    std::vector<std::pair<power, coeff>> poly_input1 = {};
+    std::vector<std::pair<power, coeff>> poly_input1 = {{10,-5}};
     std::vector<std::pair<power, coeff>> poly_input2 = {{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}};
 
     // std::vector<std::pair<power, coeff>> solution = {{4,1}, {2,2}, {0,1}};

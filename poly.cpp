@@ -15,6 +15,9 @@ polynomial::polynomial(Iter begin, Iter end){
         this->poly.push_back(pair1);
         return;
     }
+    while(begin->second == 0){
+        begin++;
+    }
     this->poly.push_back(*begin);
     begin++;
 
@@ -117,10 +120,10 @@ polynomial polynomial::operator+(const int other) const{
 
     if (back.first == 0){
         new_poly.pop_back();
-        new_poly.push_back(std::make_pair(0, other));
+        new_poly.push_back(std::make_pair(0, back.second +other));
     }
     else{
-        new_poly.push_back(std::make_pair(0, back.second + other));
+        new_poly.push_back(std::make_pair(0, other));
     }
     return polynomial(new_poly.begin(), new_poly.end());
 }
