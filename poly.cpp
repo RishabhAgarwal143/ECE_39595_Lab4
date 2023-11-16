@@ -85,6 +85,16 @@ polynomial polynomial::operator+(const polynomial &other) const{
             it2++;
         }
     }
+
+    while(it1 != this->poly.end()){
+        new_poly.push_back(*it1);
+        it1++;
+    }
+    while(it2 != other.poly.end()){
+        new_poly.push_back(*it2);
+        it2++;
+    }
+
     return polynomial(new_poly.begin(), new_poly.end());
 }
 
