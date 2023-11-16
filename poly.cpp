@@ -72,6 +72,11 @@ polynomial polynomial::operator+(const polynomial &other) const{
 
     while(it1 != this->poly.end() && it2 != other.poly.end()){
         if(it1->first == it2->first){
+            if (it1->second + it2->second == 0){
+                it1++;
+                it2++;
+                continue;
+            }
             new_poly.push_back(std::make_pair(it1->first, it1->second + it2->second));
             it1++;
             it2++;
