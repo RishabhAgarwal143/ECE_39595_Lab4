@@ -142,21 +142,31 @@ polynomial polynomial::operator*(const int other) const{
 }
 
 polynomial polynomial::operator%(const polynomial &divisor) {
-    // do mod division of this by other
-    // return the remainder
 
-    std::vector<std::pair<power, coeff>> new_poly;
+    std::vector<std::pair<power, coeff>> out = this->poly;
 
-    std::vector<std::pair<power, coeff>>::iterator it1 = this->poly.begin();
-    std::vector<std::pair<power, coeff>>::const_iterator it2 = divisor.poly.begin();
+    while (!out.empty() && out.begin()->first >= divisor.poly.begin()->first) {
+        coeff coeffMult = out.begin()->second / divisor.poly.begin()->second;
+        power pDiff = out.begin()->first - divisor.poly.begin()->first;
 
-    if (it1->first < it2->first){
-        return polynomial(new_poly.begin(), new_poly.end());
+        for (auto val: divisor.poly) {
+            int newCoeff = val.second * coeffMult;
+            int newPower = val.first + pDiff;
+
+            auto reduce = std::make_pair(newPower, newCoeff);
+
+            for (auto it = out.begin(); it != out.end(); ++it) {
+                if (it->first == reduce.first) {
+                    it->second -= reduce.second;
+                    if (it->second == 0) {
+                        out.erase(it);
+                    }
+                    break;
+                }
+            }
+        }
     }
-
-    return polynomial(new_poly.begin(), new_poly.end());
-
-    
+    return polynomial(out.begin(), out.end());
 }
 
 
