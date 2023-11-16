@@ -127,6 +127,14 @@ polynomial polynomial::operator*(const polynomial &other){
 }
 
 polynomial polynomial::operator*(const int other) const{
+
+    if (other == 0)
+    {
+        std::vector<std::pair<power, coeff>> new_poly;
+        return polynomial(new_poly.begin(), new_poly.end());
+    }
+    
+
     std::vector<std::pair<power, coeff>> new_poly;
     for(auto it = this->poly.begin(); it != this->poly.end(); it++){
         new_poly.push_back(std::make_pair(it->first, it->second * other));
