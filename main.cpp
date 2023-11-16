@@ -31,15 +31,24 @@ std::optional<double> poly_test(polynomial& p1,
 int main()
 {
     /** We're doing (x+1)^2, so solution is x^2 + 2x + 1*/
-    std::vector<std::pair<power, coeff>> solution = {{2,1}, {1,2}, {0,1}};
+    // std::vector<std::pair<power, coeff>> solution = {{2,1}, {1,2}, {0,1}};
 
-    /** This holds (x+1), which we'll pass to each polynomial */
-    std::vector<std::pair<power, coeff>> poly_input = {{1,1}, {0,1}};
+    // /** This holds (x+1), which we'll pass to each polynomial */
+    // std::vector<std::pair<power, coeff>> poly_input = {{1,1}, {0,1}};
+    // polynomial p1(poly_input.begin(), poly_input.end());
+    // polynomial p2(poly_input.begin(), poly_input.end());
 
-    polynomial p1(poly_input.begin(), poly_input.end());
-    polynomial p2(poly_input.begin(), poly_input.end());
+    std::vector<std::pair<power, coeff>> poly_input1 = {{4,2}, {3,-3}, {2, 5}, {1, 7}, {0, -1}};
+    std::vector<std::pair<power, coeff>> poly_input2 = {{6,-4}, {5,2}, {4, -6}, {3, 8}, {2, 1}, {1, -5}, {0, 3}};
 
-    std::optional<double> result = poly_test(p1, p2, solution);
+    // std::vector<std::pair<power, coeff>> solution = {{4,1}, {2,2}, {0,1}};
+    std::vector<std::pair<power, coeff>> solution_mult = {{10,-8}, {9,16}, {8,-38}, {7, 16}, {6,-34}, {5,-17}, {4, 88}, {3,-35}, {2, -21}, {1, 26}, {0, -3}};
+
+
+    polynomial p1(poly_input1.begin(), poly_input1.end());
+    polynomial p2(poly_input2.begin(), poly_input2.end());
+
+    std::optional<double> result = poly_test(p1, p2, solution_mult);
 
     if (result.has_value())
     {

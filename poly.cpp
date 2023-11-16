@@ -106,6 +106,23 @@ polynomial polynomial::operator*(const polynomial &other){
             new_poly.push_back(std::make_pair(it1->first + it2->first, it1->second * it2->second));
         }
     }
+
+    std::vector<std::pair<power, coeff>>::iterator it1 = new_poly.begin();
+    std::vector<std::pair<power, coeff>>::iterator it2 = new_poly.begin();
+
+    while(it1 != new_poly.end()){
+        it2 = it1 + 1;
+        while(it2 != new_poly.end()){
+            if(it1->first == it2->first){
+                it1->second += it2->second;
+                it2 = new_poly.erase(it2);
+            }
+            else{
+                it2++;
+            }
+        }
+        it1++;
+    }
     return polynomial(new_poly.begin(), new_poly.end());
 }
 
@@ -129,6 +146,8 @@ polynomial polynomial::operator%(const polynomial &divisor) {
     if (it1->first < it2->first){
         return polynomial(new_poly.begin(), new_poly.end());
     }
+
+    return polynomial(new_poly.begin(), new_poly.end());
 
     
 }
