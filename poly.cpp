@@ -90,7 +90,7 @@ polynomial polynomial::operator+(const int other) const{
         new_poly.push_back(std::make_pair(it->first, it->second));
     }
     auto back = this->poly.back();
-    if (back.second == 0){
+    if (back.first == 0){
         new_poly.push_back(std::make_pair(0, other));
     }
     else{
