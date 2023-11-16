@@ -197,6 +197,7 @@ polynomial polynomial::operator%(const polynomial &divisor) {
             power newPower = val.first + pDiff;
 
             auto reduce = std::make_pair(newPower, newCoeff);
+            bool exists = false;
 
             for (auto it = out.begin(); it != out.end(); ++it) {
                 if (it->first == reduce.first) {
@@ -204,8 +205,12 @@ polynomial polynomial::operator%(const polynomial &divisor) {
                     if (it->second == 0) {
                         out.erase(it);
                     }
+                    exists = true;
                     break;
                 }
+            }
+            if (!exists) {
+                out.push_back(std::make_pair(reduce.first, 0));
             }
         }
     }
