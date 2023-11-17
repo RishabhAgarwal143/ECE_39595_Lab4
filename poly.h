@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <cstddef>
+#include <algorithm>
 
 using power = size_t;
 using coeff = int;
@@ -64,7 +65,7 @@ public:
     polynomial operator*(const polynomial&) const;
     polynomial operator*(const int) const;
     friend polynomial operator*(const int,const polynomial&);
-    polynomial operator%(const polynomial&);
+    polynomial operator%(polynomial&);
 
     polynomial &operator=(const polynomial &other);
 

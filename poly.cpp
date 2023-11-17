@@ -184,37 +184,25 @@ polynomial operator+(const int val,const polynomial& other){
     return other + val;
 }
 
-polynomial polynomial::operator%(const polynomial &divisor) {
+polynomial polynomial::operator%(polynomial &divisor) {
 
-    std::vector<std::pair<power, coeff>> out = this->poly;
+    polynomial rem = *this;
+    polynomial q;
 
-    while (!out.empty() && out.begin()->first >= divisor.poly.begin()->first) {
-        coeff coeffMult = out.begin()->second / divisor.poly.begin()->second;
-        power pDiff = out.begin()->first - divisor.poly.begin()->first;
+    while (rem.find_degree_of() != 0 && rem.find_degree_of() >= divisor.find_degree_of()) {
+        power powerDiff = rem.poly.begin()->first - divisor.poly.begin()->first;
+        coeff coeffDiff = rem.poly.begin()->second / divisor.poly.begin()->second;
 
-        for (auto val: divisor.poly) {
-            coeff newCoeff = val.second * coeffMult;
-            power newPower = val.first + pDiff;
+        auto tPair = std::make_pair(powerDiff, coeffDiff);
+        std::vector<std::pair<power, coeff>> tVec = {tPair};
+        polynomial tPoly = polynomial(tVec.begin(), tVec.end());
 
-            auto reduce = std::make_pair(newPower, newCoeff);
-            bool exists = false;
+        q = q + tPoly;
 
-            for (auto it = out.begin(); it != out.end(); ++it) {
-                if (it->first == reduce.first) {
-                    it->second -= reduce.second;
-                    if (it->second == 0) {
-                        out.erase(it);
-                    }
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                out.push_back(std::make_pair(reduce.first, 0));
-            }
-        }
+        rem = rem + ((tPoly * divisor) * (-1));
     }
-    return polynomial(out.begin(), out.end());
+
+    return rem;
 }
 
 
