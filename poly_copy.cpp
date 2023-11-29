@@ -1,4 +1,4 @@
-#include "poly.h"
+#include "poly_copy.h"
 #include <iostream>
 
 polynomial::polynomial(){
@@ -10,38 +10,28 @@ template <typename Iter>
 polynomial::polynomial(Iter begin, Iter end){
     
     if(begin == end){
-        std::pair<power, coeff> pair1 = std::make_pair(0, 0);
-        this->poly.push_back(pair1);
+        this->powers_in_hash.insert(0);
+        this->polynomial_map.insert({0,0})
         return;
     }
     while(begin->second == 0 && begin != end){
         begin++;
     }
     if(begin == end){
-        std::pair<power, coeff> pair1 = std::make_pair(0, 0);
-        this->poly.push_back(pair1);
+        this->powers_in_hash.insert(0);
+        this->polynomial_map.insert({0,0})
         return;
     }
     this->poly.push_back(*begin);
     begin++;
-
     while(begin != end){
         if(begin->second == 0){
             begin++;
             continue;
         }
-        auto temp = this->poly.begin();
-        auto temp2 = this->poly.end();
-        while(temp != temp2){
-            if(temp->first < begin->first){
-                this->poly.insert(temp,*begin);
-                break;
-            }
-            temp++;
-        }
-        if(temp == temp2){
-            this->poly.push_back(*begin);
-        }
+
+        this->powers_in_hash.insert(begin->first);
+        this->polynomial_map.insert({begin->first,begin->second});
         begin++;
     }
 
@@ -207,6 +197,9 @@ size_t polynomial::find_degree_of(){
 }
 
 std::vector<std::pair<power, coeff>> polynomial::canonical_form() const{
-    
-    return this->poly;
+    std::vector<std::pair<power, coeff>> poly;
+    for(auto ele: this->powers_in_hash){
+
+    }
+    return poly;
 }
