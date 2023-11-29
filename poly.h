@@ -1,3 +1,4 @@
+
 #ifndef POLY_H
 #define POLY_H
 
@@ -60,14 +61,15 @@ public:
 
     polynomial operator+(const polynomial&) const; 
     polynomial operator+(const int) const;
-    friend polynomial operator+(const int,const polynomial&);
     
     polynomial operator*(const polynomial&) const;
     polynomial operator*(const int) const;
-    friend polynomial operator*(const int,const polynomial&);
-    polynomial operator%(polynomial&);
+
+    polynomial operator%(const polynomial&) const;
 
     polynomial &operator=(const polynomial &other);
+    friend polynomial operator+(const int,const polynomial&);
+    friend polynomial operator*(const int,const polynomial&);
 
     // template <typename Item>
     // polynomial &operator+(const Item &other);

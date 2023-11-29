@@ -134,7 +134,6 @@ polynomial polynomial::operator+(const int other) const{
 }
 
 
-
 polynomial polynomial::operator*(const polynomial &other) const{
     std::vector<std::pair<power, coeff>> new_poly;
     for(auto it1 = this->poly.begin(); it1 != this->poly.end(); it1++){
@@ -184,12 +183,12 @@ polynomial operator+(const int val,const polynomial& other){
     return other + val;
 }
 
-polynomial polynomial::operator%(polynomial &divisor) {
+polynomial polynomial::operator%(const polynomial &divisor) const {
 
     polynomial rem = *this;
     polynomial q;
 
-    while (rem.find_degree_of() != 0 && rem.find_degree_of() >= divisor.find_degree_of()) {
+    while (rem.find_degree_of() != 0 && rem.find_degree_of() >= divisor.poly.at(0).first) {
         power powerDiff = rem.poly.begin()->first - divisor.poly.begin()->first;
         coeff coeffDiff = rem.poly.begin()->second / divisor.poly.begin()->second;
 
