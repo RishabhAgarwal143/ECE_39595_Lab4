@@ -193,13 +193,15 @@ polynomial polynomial::operator%(const polynomial &divisor) const {
 
 
 size_t polynomial::find_degree_of(){
-    return this->poly.at(0).first;
+    auto iter = this->powers_in_hash.end();
+    iter--;
+    return *iter;
 }
 
 std::vector<std::pair<power, coeff>> polynomial::canonical_form() const{
     std::vector<std::pair<power, coeff>> poly;
     for(auto ele: this->powers_in_hash){
-
+        poly.push_back(std::make_pair(ele,this->polynomial_map.at(ele)));
     }
     return poly;
 }

@@ -38,6 +38,9 @@ public:
     template <typename Iter>
     polynomial(Iter begin, Iter end);
 
+
+    polynomial(std::set<int> power_set,std::unordered_map<int,int> coeff_map);
+
     /**
      * @brief Construct a new polynomial object from an existing polynomial object
      *
