@@ -2,8 +2,9 @@
 #include <iostream>
 
 polynomial::polynomial(){
-    std::pair<power, coeff> pair1 = std::make_pair(0, 0);
-    this->poly.push_back(pair1);
+    this->powers_in_hash.insert(0);
+    this->polynomial_map.insert({0,0});
+    return;
 }
 
 template <typename Iter>
@@ -11,7 +12,7 @@ polynomial::polynomial(Iter begin, Iter end){
     
     if(begin == end){
         this->powers_in_hash.insert(0);
-        this->polynomial_map.insert({0,0})
+        this->polynomial_map.insert({0,0});
         return;
     }
     while(begin->second == 0 && begin != end){
@@ -19,7 +20,7 @@ polynomial::polynomial(Iter begin, Iter end){
     }
     if(begin == end){
         this->powers_in_hash.insert(0);
-        this->polynomial_map.insert({0,0})
+        this->polynomial_map.insert({0,0});
         return;
     }
     this->poly.push_back(*begin);
@@ -35,6 +36,11 @@ polynomial::polynomial(Iter begin, Iter end){
         begin++;
     }
 
+}
+
+polynomial::polynomial(std::set<int> power_set,std::unordered_map<int,int> coeff_map){
+    this->polynomial_map = coeff_map;
+    this->powers_in_hash = power_set;
 }
 
 polynomial::polynomial(const polynomial &other){
@@ -65,9 +71,7 @@ polynomial polynomial::operator+(const polynomial &other) const{
     std::unordered_map<int,int> new_map;
 
     // add sets together (find more efficient way to do this)
-    for(auto elem: this->powers_in_hash){
-        new_powers.insert(elem);
-    }
+    new_powers = this->powers_in_hash;
     for(auto elem: other.powers_in_hash){
         new_powers.insert(elem);
     }
@@ -90,7 +94,7 @@ polynomial polynomial::operator+(const polynomial &other) const{
         new_poly.push_back(std::make_pair(elem.first,elem.second));
     }
 
-
+    return polynomial(new_powers,new_map);
 
     // std::vector<std::pair<power, coeff>> new_poly;
     // std::vector<std::pair<power, coeff>>::const_iterator it1 = this->poly.begin();
