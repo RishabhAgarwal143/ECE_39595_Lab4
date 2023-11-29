@@ -71,29 +71,17 @@ polynomial &polynomial::operator=(const polynomial &other)
 polynomial polynomial::operator+(const polynomial &other) const
 {
 
-    polynomial p1;
-
-    // add sets together (find more efficient way to do this)
-    for (auto elem : this->powers_in_hash)
-    {
-        p1.powers_in_hash.insert(elem);
-    }
+    polynomial p1 = *this;
     for (auto elem : other.powers_in_hash)
     {
         p1.powers_in_hash.insert(elem);
-    }
-    for (auto elem : p1.powers_in_hash)
-    {
-        int coeff = 0;
-        if (this->polynomial_map.find(elem) != this->polynomial_map.end())
+        if (p1.polynomial_map.find(elem) == p1.polynomial_map.end())
         {
-            coeff += this->polynomial_map.at(elem);
+            p1.polynomial_map.insert({elem, other.polynomial_map.at(elem)});
         }
-        if (other.polynomial_map.find(elem) != other.polynomial_map.end())
-        {
-            coeff += other.polynomial_map.at(elem);
+        else{
+            p1.polynomial_map.at(elem) += other.polynomial_map.at(elem);
         }
-        p1.polynomial_map.insert({elem, coeff});
     }
     return p1;
 }
@@ -101,11 +89,8 @@ polynomial polynomial::operator+(const polynomial &other) const
 polynomial polynomial::operator+(const int other) const
 {
 
-    polynomial p1;
-    p1.powers_in_hash = this->powers_in_hash;
+    polynomial p1 = *this;
     p1.powers_in_hash.insert(0);
-
-    p1.polynomial_map = this->polynomial_map;
     if (p1.polynomial_map.find(0) != p1.polynomial_map.end())
     {
         p1.polynomial_map.at(0) += other;
@@ -114,7 +99,6 @@ polynomial polynomial::operator+(const int other) const
     {
         p1.polynomial_map.insert({0, other});
     }
-
     return p1;
 }
 
