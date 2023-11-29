@@ -104,30 +104,79 @@ polynomial polynomial::operator+(const int other) const
 
 
 polynomial polynomial::operator*(const polynomial &other) const{
-    std::vector<std::pair<power, coeff>> new_poly;
-    for(auto it1 = this->poly.begin(); it1 != this->poly.end(); it1++){
-        for(auto it2 = other.poly.begin(); it2 != other.poly.end(); it2++){
-            new_poly.push_back(std::make_pair(it1->first + it2->first, it1->second * it2->second));
-        }
+
+    std::set <int> new_powers;
+    std::unordered_map<int,int> new_map;
+
+    // find which polynomial has more terms
+    polynomial p1 = *this;
+    polynomial p2 = other;
+
+    bool p1_is_bigger = true;
+    int p1_size = p1.powers_in_hash.size();
+    int p2_size = p2.powers_in_hash.size();
+
+    if (p1_size < p2_size){
+        p1_is_bigger = false;
     }
 
-    std::vector<std::pair<power, coeff>>::iterator it1 = new_poly.begin();
-    std::vector<std::pair<power, coeff>>::iterator it2 = new_poly.begin();
+    // divide the bigger polynomial into smaller parts using threads (max 8) and multiply each part by the smaller polynomial
+    // add the results together
+    // return the result
 
-    while(it1 != new_poly.end()){
-        it2 = it1 + 1;
-        while(it2 != new_poly.end()){
-            if(it1->first == it2->first){
-                it1->second += it2->second;
-                it2 = new_poly.erase(it2);
-            }
-            else{
-                it2++;
-            }
+    if (p1_is_bigger) {
+        // divide p1 into max 8 parts (if p1 size is less than 8, then divide into p1_size parts)
+        int num_threads = 8;
+        if (p1_size < 8) {
+            num_threads = p1_size;
         }
-        it1++;
+
+        int num_elements_per_thread = p1_size / num_threads;
+        printf("num_elements_per_thread: %d\n", num_elements_per_thread);
+        int num_elements_last_thread = p1_size % num_threads;
+        printf("num_elements_last_thread: %d\n", num_elements_last_thread);
+
+        std::vector<std::vector<int>> parts(new_powers.size()/p1_size + 1);
+
+        size_t i = 0;
+
+        for (auto d : p1.powers_in_hash) {
+            parts.at((int)(i++/p1_size)).push_back(d);
+        }
+
+        int parts_len = parts.size();
+        
+        std::vector<std::thread> threads;
+
+
     }
-    return polynomial(new_poly.begin(), new_poly.end());
+    return p1;
+        
+
+    // std::vector<std::pair<power, coeff>> new_poly;
+    // for(auto it1 = this->poly.begin(); it1 != this->poly.end(); it1++){
+    //     for(auto it2 = other.poly.begin(); it2 != other.poly.end(); it2++){
+    //         new_poly.push_back(std::make_pair(it1->first + it2->first, it1->second * it2->second));
+    //     }
+    // }
+
+    // std::vector<std::pair<power, coeff>>::iterator it1 = new_poly.begin();
+    // std::vector<std::pair<power, coeff>>::iterator it2 = new_poly.begin();
+
+    // while(it1 != new_poly.end()){
+    //     it2 = it1 + 1;
+    //     while(it2 != new_poly.end()){
+    //         if(it1->first == it2->first){
+    //             it1->second += it2->second;
+    //             it2 = new_poly.erase(it2);
+    //         }
+    //         else{
+    //             it2++;
+    //         }
+    //     }
+    //     it1++;
+    // }
+    // return polynomial(new_poly.begin(), new_poly.end());
 }
 
 polynomial polynomial::operator*(const int other) const{

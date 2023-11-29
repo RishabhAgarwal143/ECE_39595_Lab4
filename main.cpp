@@ -14,7 +14,7 @@ std::optional<double> poly_test(polynomial& p1,
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
     // polynomial p3 = p1 * p2;
-    polynomial p3 = p1 + p2;
+    polynomial p3 = p1 * p2;
 
     auto p3_can_form = p3.canonical_form();
 

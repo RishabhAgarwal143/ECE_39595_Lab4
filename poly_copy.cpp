@@ -111,6 +111,10 @@ polynomial polynomial::operator+(const int other) const{
 }
 
 
+std::unordered_map<int,int> polynomial::get_map(){
+    return this->polynomial_map;
+}
+
 polynomial polynomial::operator*(const polynomial &other) const{
 
     std::set <int> new_powers;
@@ -142,7 +146,17 @@ polynomial polynomial::operator*(const polynomial &other) const{
         int num_elements_per_thread = p1_size / num_threads;
         int num_elements_last_thread = p1_size % num_threads;
 
-        std::vector<std::vector<int>> parts(new_powers.size()/p1_size + 1);
+        auto set_begin = p1.powers_in_hash.begin();
+        auto set_end = p1.powers_in_hash.end();
+
+
+        for (int t = 0; t < num_threads; t++) {
+            
+            
+
+        }
+
+
 
         size_t i = 0;
 
@@ -151,6 +165,9 @@ polynomial polynomial::operator*(const polynomial &other) const{
         }
 
         int parts_len = parts.size();
+        
+
+
 
 
 
