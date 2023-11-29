@@ -66,17 +66,16 @@ polynomial &polynomial::operator=(const polynomial &other){
 
 polynomial polynomial::operator+(const polynomial &other) const{
 
-    std::set<int> new_powers;
-    std::unordered_map<int,int> new_map;
+    polynomial p1;
 
     // add sets together (find more efficient way to do this)
-    new_powers = this->powers_in_hash;
+    p1.powers_in_hash = this->powers_in_hash;
     for(auto elem: other.powers_in_hash){
-        new_powers.insert(elem);
+        p1.powers_in_hash.insert(elem);
     }
 
 
-    for(auto elem: new_powers){
+    for(auto elem: p1.powers_in_hash){
         int coeff = 0;
         if(this->polynomial_map.find(elem) != this->polynomial_map.end()){
             coeff += this->polynomial_map.at(elem);
@@ -84,57 +83,122 @@ polynomial polynomial::operator+(const polynomial &other) const{
         if(other.polynomial_map.find(elem) != other.polynomial_map.end()){
             coeff += other.polynomial_map.at(elem);
         }
-        new_map.insert({elem,coeff});
+        p1.polynomial_map.insert({elem,coeff});
     }
-
-    return polynomial(new_powers,new_map);
+    return p1;
 }
 
 polynomial polynomial::operator+(const int other) const{
-    std::set<int> new_powers;
-    std::unordered_map<int,int> new_map;
+
+    polynomial p1;
+
+    // std::set<int> new_powers;
+    // std::unordered_map<int,int> new_map;
 
     // add sets together (find more efficient way to do this)
-    new_powers = this->powers_in_hash;
-    new_powers.insert(0);
+    p1.powers_in_hash = this->powers_in_hash;
+    p1.powers_in_hash.insert(0);
 
-    new_map = this->polynomial_map;
-    if (new_map.find(0) != new_map.end()){
-        new_map.at(0) += other;
+    p1.polynomial_map = this->polynomial_map;
+    if (p1.polynomial_map.find(0) != p1.polynomial_map.end()){
+        p1.polynomial_map.at(0) += other;
     }
     else{
-        new_map.insert({0,other});
+        p1.polynomial_map.insert({0,other});
     }
 
-    return polynomial(new_powers,new_map);
+    return p1;
 }
 
 
 polynomial polynomial::operator*(const polynomial &other) const{
-    std::vector<std::pair<power, coeff>> new_poly;
-    for(auto it1 = this->poly.begin(); it1 != this->poly.end(); it1++){
-        for(auto it2 = other.poly.begin(); it2 != other.poly.end(); it2++){
-            new_poly.push_back(std::make_pair(it1->first + it2->first, it1->second * it2->second));
-        }
+
+    std::set <int> new_powers;
+    std::unordered_map<int,int> new_map;
+
+    // find which polynomial has more terms
+    polynomial p1 = *this;
+    polynomial p2 = other;
+
+    bool p1_is_bigger = true;
+    int p1_size = p1.powers_in_hash.size();
+    int p2_size = p2.powers_in_hash.size();
+
+    if (p1_size < p2_size){
+        p1_is_bigger = false;
     }
 
-    std::vector<std::pair<power, coeff>>::iterator it1 = new_poly.begin();
-    std::vector<std::pair<power, coeff>>::iterator it2 = new_poly.begin();
+    // divide the bigger polynomial into smaller parts using threads (max 8) and multiply each part by the smaller polynomial
+    // add the results together
+    // return the result
 
-    while(it1 != new_poly.end()){
-        it2 = it1 + 1;
-        while(it2 != new_poly.end()){
-            if(it1->first == it2->first){
-                it1->second += it2->second;
-                it2 = new_poly.erase(it2);
-            }
-            else{
-                it2++;
-            }
+    if (p1_is_bigger) {
+        // divide p1 into max 8 parts (if p1 size is less than 8, then divide into p1_size parts)
+        int num_threads = 8;
+        if (p1_size < 8) {
+            num_threads = p1_size;
         }
-        it1++;
+
+        int num_elements_per_thread = p1_size / num_threads;
+        int num_elements_last_thread = p1_size % num_threads;
+
+        std::vector<std::vector<int>> parts(new_powers.size()/p1_size + 1);
+
+        size_t i = 0;
+
+        for (auto d : p1.powers_in_hash) {
+            parts.at((int)(i++/p1_size)).push_back(d);
+        }
+
+        int parts_len = parts.size();
+
+
+
+        // std::vector<std::thread> threads;
+
+        // for (int i = 0; i < parts_len; i++) {
+        //     threads.push_back(std::thread([&, i] {
+        //         for (auto d : parts.at(i)) {
+        //             for (auto e : p2.powers_in_hash) {
+        //                 new_powers.insert(d + e);
+        //                 new_map.insert({d + e, p1.polynomial_map.at(d) * p2.polynomial_map.at(e)});
+        //             }
+        //         }
+        //     }));
+        // }
+
+
+        
+
     }
-    return polynomial(new_poly.begin(), new_poly.end());
+
+
+
+
+    // std::vector<std::pair<power, coeff>> new_poly;
+    // for(auto it1 = this->poly.begin(); it1 != this->poly.end(); it1++){
+    //     for(auto it2 = other.poly.begin(); it2 != other.poly.end(); it2++){
+    //         new_poly.push_back(std::make_pair(it1->first + it2->first, it1->second * it2->second));
+    //     }
+    // }
+
+    // std::vector<std::pair<power, coeff>>::iterator it1 = new_poly.begin();
+    // std::vector<std::pair<power, coeff>>::iterator it2 = new_poly.begin();
+
+    // while(it1 != new_poly.end()){
+    //     it2 = it1 + 1;
+    //     while(it2 != new_poly.end()){
+    //         if(it1->first == it2->first){
+    //             it1->second += it2->second;
+    //             it2 = new_poly.erase(it2);
+    //         }
+    //         else{
+    //             it2++;
+    //         }
+    //     }
+    //     it1++;
+    // }
+    // return polynomial(new_poly.begin(), new_poly.end());
 }
 
 polynomial polynomial::operator*(const int other) const{
