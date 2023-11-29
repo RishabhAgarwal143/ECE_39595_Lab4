@@ -61,41 +61,72 @@ polynomial &polynomial::operator=(const polynomial &other){
 
 polynomial polynomial::operator+(const polynomial &other) const{
 
+    std::set<int> new_powers;
+    std::unordered_map<int,int> new_map;
+
+    // add sets together (find more efficient way to do this)
+    for(auto elem: this->powers_in_hash){
+        new_powers.insert(elem);
+    }
+    for(auto elem: other.powers_in_hash){
+        new_powers.insert(elem);
+    }
+
+
+    for(auto elem: new_powers){
+        int coeff = 0;
+        if(this->polynomial_map.find(elem) != this->polynomial_map.end()){
+            coeff += this->polynomial_map.at(elem);
+        }
+        if(other.polynomial_map.find(elem) != other.polynomial_map.end()){
+            coeff += other.polynomial_map.at(elem);
+        }
+        new_map.insert({elem,coeff});
+    }
+
+    // converts map to vector
     std::vector<std::pair<power, coeff>> new_poly;
-    std::vector<std::pair<power, coeff>>::const_iterator it1 = this->poly.begin();
-    std::vector<std::pair<power, coeff>>::const_iterator it2 = other.poly.begin();
-
-    while(it1 != this->poly.end() && it2 != other.poly.end()){
-        if(it1->first == it2->first){
-            if (it1->second + it2->second == 0){
-                it1++;
-                it2++;
-                continue;
-            }
-            new_poly.push_back(std::make_pair(it1->first, it1->second + it2->second));
-            it1++;
-            it2++;
-        }
-        else if(it1->first > it2->first){
-            new_poly.push_back(std::make_pair(it1->first, it1->second));
-            it1++;
-        }
-        else{
-            new_poly.push_back(std::make_pair(it2->first, it2->second));
-            it2++;
-        }
+    for(auto elem: new_map){
+        new_poly.push_back(std::make_pair(elem.first,elem.second));
     }
 
-    while(it1 != this->poly.end()){
-        new_poly.push_back(*it1);
-        it1++;
-    }
-    while(it2 != other.poly.end()){
-        new_poly.push_back(*it2);
-        it2++;
-    }
 
-    return polynomial(new_poly.begin(), new_poly.end());
+
+    // std::vector<std::pair<power, coeff>> new_poly;
+    // std::vector<std::pair<power, coeff>>::const_iterator it1 = this->poly.begin();
+    // std::vector<std::pair<power, coeff>>::const_iterator it2 = other.poly.begin();
+
+    // while(it1 != this->poly.end() && it2 != other.poly.end()){
+    //     if(it1->first == it2->first){
+    //         if (it1->second + it2->second == 0){
+    //             it1++;
+    //             it2++;
+    //             continue;
+    //         }
+    //         new_poly.push_back(std::make_pair(it1->first, it1->second + it2->second));
+    //         it1++;
+    //         it2++;
+    //     }
+    //     else if(it1->first > it2->first){
+    //         new_poly.push_back(std::make_pair(it1->first, it1->second));
+    //         it1++;
+    //     }
+    //     else{
+    //         new_poly.push_back(std::make_pair(it2->first, it2->second));
+    //         it2++;
+    //     }
+    // }
+
+    // while(it1 != this->poly.end()){
+    //     new_poly.push_back(*it1);
+    //     it1++;
+    // }
+    // while(it2 != other.poly.end()){
+    //     new_poly.push_back(*it2);
+    //     it2++;
+    // }
+
+    // return polynomial(new_poly.begin(), new_poly.end());
 }
 
 polynomial polynomial::operator+(const int other) const{
