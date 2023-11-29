@@ -44,24 +44,23 @@ polynomial::polynomial(std::set<int> power_set,std::unordered_map<int,int> coeff
 }
 
 polynomial::polynomial(const polynomial &other){
-    for (auto i: other.poly){
-        this->poly.push_back(i);
-    }
+    this->polynomial_map = other.polynomial_map;
+    this->powers_in_hash = other.powers_in_hash;
 }
 
 void polynomial::print() const{
-    for (auto items: this->poly){
-        std::cout << items.second << "x^" << items.first << " + ";
+    for (auto items: this->powers_in_hash){
+        std::cout << this->polynomial_map.at(items) << "x^" << items << " + ";
     }
     std::cout << "|END|" <<std::endl;
 }
 
 
 polynomial &polynomial::operator=(const polynomial &other){
-    this->poly.clear();
-    for (auto i: other.poly){
-        this->poly.push_back(i);
-    }
+    this->polynomial_map.clear();
+    this->powers_in_hash.clear();
+    this->polynomial_map = other.polynomial_map;
+    this->powers_in_hash = other.powers_in_hash;
     return *this;
 }
 
