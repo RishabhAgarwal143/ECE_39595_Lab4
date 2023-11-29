@@ -87,71 +87,26 @@ polynomial polynomial::operator+(const polynomial &other) const{
         new_map.insert({elem,coeff});
     }
 
-    // converts map to vector
-    std::vector<std::pair<power, coeff>> new_poly;
-    for(auto elem: new_map){
-        new_poly.push_back(std::make_pair(elem.first,elem.second));
-    }
-
     return polynomial(new_powers,new_map);
-
-    // std::vector<std::pair<power, coeff>> new_poly;
-    // std::vector<std::pair<power, coeff>>::const_iterator it1 = this->poly.begin();
-    // std::vector<std::pair<power, coeff>>::const_iterator it2 = other.poly.begin();
-
-    // while(it1 != this->poly.end() && it2 != other.poly.end()){
-    //     if(it1->first == it2->first){
-    //         if (it1->second + it2->second == 0){
-    //             it1++;
-    //             it2++;
-    //             continue;
-    //         }
-    //         new_poly.push_back(std::make_pair(it1->first, it1->second + it2->second));
-    //         it1++;
-    //         it2++;
-    //     }
-    //     else if(it1->first > it2->first){
-    //         new_poly.push_back(std::make_pair(it1->first, it1->second));
-    //         it1++;
-    //     }
-    //     else{
-    //         new_poly.push_back(std::make_pair(it2->first, it2->second));
-    //         it2++;
-    //     }
-    // }
-
-    // while(it1 != this->poly.end()){
-    //     new_poly.push_back(*it1);
-    //     it1++;
-    // }
-    // while(it2 != other.poly.end()){
-    //     new_poly.push_back(*it2);
-    //     it2++;
-    // }
-
-    // return polynomial(new_poly.begin(), new_poly.end());
 }
 
 polynomial polynomial::operator+(const int other) const{
-    std::vector<std::pair<power, coeff>> new_poly;
-    for(auto it = this->poly.begin(); it != this->poly.end(); it++){
-        new_poly.push_back(std::make_pair(it->first, it->second));
-    }
+    std::set<int> new_powers;
+    std::unordered_map<int,int> new_map;
 
-    if (other == 0) {
-        return polynomial(new_poly.begin(), new_poly.end());
-    }
+    // add sets together (find more efficient way to do this)
+    new_powers = this->powers_in_hash;
+    new_powers.insert(0);
 
-    auto back = this->poly.back();
-
-    if (back.first == 0){
-        new_poly.pop_back();
-        new_poly.push_back(std::make_pair(0, back.second +other));
+    new_map = this->polynomial_map;
+    if (new_map.find(0) != new_map.end()){
+        new_map.at(0) += other;
     }
     else{
-        new_poly.push_back(std::make_pair(0, other));
+        new_map.insert({0,other});
     }
-    return polynomial(new_poly.begin(), new_poly.end());
+
+    return polynomial(new_powers,new_map);
 }
 
 
