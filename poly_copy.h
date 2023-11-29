@@ -1,4 +1,3 @@
-
 #ifndef POLY_H
 #define POLY_H
 
@@ -16,7 +15,7 @@ using coeff = int;
 class polynomial
 {
 public:
-    // std::vector<std::pair<power, coeff>> poly;
+    std::vector<std::pair<power, coeff>> poly;
     std::set<int> powers_in_hash;
     std::unordered_map<int,int> polynomial_map;
 
