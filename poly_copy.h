@@ -6,6 +6,8 @@
 #include <utility>
 #include <cstddef>
 #include <algorithm>
+#include <unordered_set>
+#include <unordered_map>
 
 using power = size_t;
 using coeff = int;
@@ -14,6 +16,9 @@ class polynomial
 {
 public:
     std::vector<std::pair<power, coeff>> poly;
+    std::unordered_set<int> powers_in_hash;
+    std::unordered_map<int,int> polynomial_map;
+    
     /**
      * @brief Construct a new polynomial object that is the number 0 (ie. 0x^0)
      *
