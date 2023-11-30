@@ -153,12 +153,22 @@ polynomial polynomial::operator*(const polynomial &other) const
 
     auto iter = this->powers_in_hash.cbegin();
     std::vector<std::thread> threads;
-    for(int i = 0; i < size; i++){
+    for(int i = 0; i < num_threads-1; i++){
         auto start = iter;
         std::advance(iter,num_elements_per_thread);
         auto end = iter;
-        
+        threads.(_multi,start,end,*this,other);
     }
+
+    _multi(iter,this->powers_in_hash.cend(),*this,other);
+
+
+    for(auto i: threads){
+        i.join();
+    }
+
+
+
 
     // std::vector<std::vector<int>> parts(new_powers.size() / size + 1);
 
