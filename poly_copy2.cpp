@@ -1,14 +1,16 @@
 #include "poly_copy.h"
 #include <iostream>
 
-polynomial::polynomial(){
+polynomial::polynomial()
+{
     this->powers_in_hash.insert(0);
     this->polynomial_map.insert({0, 0});
 }
 
 template <typename Iter>
-polynomial::polynomial(Iter begin, Iter end){
-    
+polynomial::polynomial(Iter begin, Iter end)
+{
+
     if (begin == end)
     {
         this->powers_in_hash.insert(0);
@@ -40,7 +42,6 @@ polynomial::polynomial(Iter begin, Iter end){
         this->polynomial_map.insert({begin->first, begin->second});
         begin++;
     }
-
 }
 
 polynomial::polynomial(const polynomial &other)
@@ -57,7 +58,6 @@ void polynomial::print() const
     }
     std::cout << "|END|" << std::endl;
 }
-
 
 polynomial &polynomial::operator=(const polynomial &other)
 {
@@ -79,7 +79,8 @@ polynomial polynomial::operator+(const polynomial &other) const
         {
             p1.polynomial_map.insert({elem, other.polynomial_map.at(elem)});
         }
-        else{
+        else
+        {
             p1.polynomial_map.at(elem) += other.polynomial_map.at(elem);
         }
     }
@@ -102,56 +103,55 @@ polynomial polynomial::operator+(const int other) const
     return p1;
 }
 
+polynomial polynomial::operator*(const polynomial &other) const
+{
 
-polynomial polynomial::operator*(const polynomial &other) const{
-
-    std::set <int> new_powers;
-    std::unordered_map<int,int> new_map;
+    std::set<int> new_powers;
+    std::unordered_map<int, int> new_map;
 
     // find which polynomial has more terms
     polynomial p1 = *this;
     polynomial p2 = other;
 
-    bool p1_is_bigger = true;
-    int p1_size = p1.powers_in_hash.size();
-    int p2_size = p2.powers_in_hash.size();
-
-    if (p1_size < p2_size){
-        p1_is_bigger = false;
-    }
-
+    int size = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? p2.powers_in_hash.size() : p1.powers_in_hash.size();
+    bool p1_bigger = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? false : true;
     // divide the bigger polynomial into smaller parts using threads (max 8) and multiply each part by the smaller polynomial
     // add the results together
     // return the result
 
-    if (p1_is_bigger) {
-        // divide p1 into max 8 parts (if p1 size is less than 8, then divide into p1_size parts)
-        int num_threads = 8;
-        if (p1_size < 8) {
-            num_threads = p1_size;
-        }
-
-        int num_elements_per_thread = p1_size / num_threads;
-        printf("num_elements_per_thread: %d\n", num_elements_per_thread);
-        int num_elements_last_thread = p1_size % num_threads;
-        printf("num_elements_last_thread: %d\n", num_elements_last_thread);
-
-        std::vector<std::vector<int>> parts(new_powers.size()/p1_size + 1);
-
-        size_t i = 0;
-
-        for (auto d : p1.powers_in_hash) {
-            parts.at((int)(i++/p1_size)).push_back(d);
-        }
-
-        int parts_len = parts.size();
-        
-        std::vector<std::thread> threads;
-
-
+    // divide p1 into max 8 parts (if p1 size is less than 8, then divide into p1_size parts)
+    int num_threads = 8;
+    if (size < 8)
+    {
+        num_threads = size;
     }
-    return p1;
+
+    int num_elements_per_thread = size / num_threads;
+    printf("num_elements_per_thread: %d\n", num_elements_per_thread);
+    int num_elements_last_thread = size % num_threads;
+    printf("num_elements_last_thread: %d\n", num_elements_last_thread);
+
+    auto iter = this->powers_in_hash.cbegin();
+    std::vector<std::thread> threads;
+    for(int i = 0; i < size; i++){
+        auto start = iter;
+        std::advance(iter,num_elements_per_thread);
+        auto end = iter;
         
+    }
+
+    // std::vector<std::vector<int>> parts(new_powers.size() / size + 1);
+
+    // size_t i = 0;
+
+    // for (auto d : p1.powers_in_hash)
+    // {
+    //     parts.at((int)(i++ / size)).push_back(d);
+    // }
+
+    // int parts_len = parts.size();
+
+    return p1;
 
     // std::vector<std::pair<power, coeff>> new_poly;
     // for(auto it1 = this->poly.begin(); it1 != this->poly.end(); it1++){
@@ -179,34 +179,39 @@ polynomial polynomial::operator*(const polynomial &other) const{
     // return polynomial(new_poly.begin(), new_poly.end());
 }
 
-polynomial polynomial::operator*(const int other) const{
+polynomial polynomial::operator*(const int other) const
+{
 
     if (other == 0)
     {
         polynomial p1;
         return p1;
     }
-    
-    std::vector<std::pair<power, coeff>> new_poly;
-    for(auto it = this->poly.begin(); it != this->poly.end(); it++){
-        new_poly.push_back(std::make_pair(it->first, it->second * other));
+    polynomial p1 = *this;
+    for (auto i : this->powers_in_hash)
+    {
+        p1.polynomial_map.at(i) *= other;
     }
-    return polynomial(new_poly.begin(), new_poly.end());
+    return p1;
 }
 
-polynomial operator*(const int val,const polynomial& other){
+polynomial operator*(const int val, const polynomial &other)
+{
     return other * val;
 }
-polynomial operator+(const int val,const polynomial& other){
+polynomial operator+(const int val, const polynomial &other)
+{
     return other + val;
 }
 
-polynomial polynomial::operator%(const polynomial &divisor) const {
+polynomial polynomial::operator%(const polynomial &divisor) const
+{
 
     polynomial rem = *this;
     polynomial q;
 
-    while (rem.find_degree_of() != 0 && rem.find_degree_of() >= divisor.poly.at(0).first) {
+    while (rem.find_degree_of() != 0 && rem.find_degree_of() >= divisor.poly.at(0).first)
+    {
         power powerDiff = rem.poly.begin()->first - divisor.poly.begin()->first;
         coeff coeffDiff = rem.poly.begin()->second / divisor.poly.begin()->second;
 
@@ -221,7 +226,6 @@ polynomial polynomial::operator%(const polynomial &divisor) const {
 
     return rem;
 }
-
 
 size_t polynomial::find_degree_of()
 {
