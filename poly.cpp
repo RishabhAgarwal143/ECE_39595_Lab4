@@ -95,7 +95,8 @@ polynomial polynomial::operator+(const polynomial &other) const
             }
         }
     }
-    else{
+    else
+    {
         p1 = other;
 
         for (auto elem : this->polynomial_map)
@@ -119,13 +120,14 @@ polynomial polynomial::operator+(const polynomial &other) const
         }
     }
     p1.degree = 0;
-    for (auto i: p1.polynomial_map){
-        if(p1.degree < i.first){
+    for (auto i : p1.polynomial_map)
+    {
+        if (p1.degree < i.first)
+        {
             p1.degree = i.first;
         }
     }
     return p1;
-
 }
 
 polynomial polynomial::operator+(const int other) const
@@ -174,7 +176,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     int size = this->polynomial_map.size() < other.polynomial_map.size() ? other.polynomial_map.size() : this->polynomial_map.size();
     bool p1_bigger = this->polynomial_map.size() < other.polynomial_map.size() ? false : true;
     int num_threads;
-    if (size < 200)
+    if (size < 160)
     {
 
         polynomial result = _multi(this->polynomial_map.begin(), this->polynomial_map.end(), other);
@@ -183,7 +185,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     }
     else
     {
-        num_threads = 7;
+        num_threads = 8;
     }
 
     int num_elements_per_thread = size / (num_threads);
@@ -192,25 +194,34 @@ polynomial polynomial::operator*(const polynomial &other) const
     std::mutex mu;
 
     auto iter = this->polynomial_map.cbegin();
-    auto end = this->polynomial_map.cend();
+    auto end1 = this->polynomial_map.cend();
 
     if (!p1_bigger)
     {
         iter = other.polynomial_map.cbegin();
-        end = other.polynomial_map.cend();
+        end1 = other.polynomial_map.cend();
     }
 
     std::vector<std::thread> threads;
-    for (int i = 0; i < num_threads - 1; i++)
+    int ct = 0;
+    for (int i = 0; i < num_threads; i++)
     {
         auto start = iter;
         iter = std::next(iter, num_elements_per_thread);
+        ct += num_elements_per_thread;
+        // std::cout << "CT IS: " << ct << "\n";
+
         auto end = iter;
+        if (i == num_threads - 1)
+        {
+            end = end1;
+        }
 
         if (p1_bigger)
         {
             threads.emplace_back([&result_poly, start, end, other, &mu]()
                                  {
+                // std::cout << i <<" running inside thread\n" ;
                 auto temp_result = _multi(start, end, other);
                 mu.lock();
                 result_poly = result_poly + temp_result;
@@ -226,21 +237,24 @@ polynomial polynomial::operator*(const polynomial &other) const
                 mu.unlock(); });
         }
     }
-    auto start = iter;
-    if (p1_bigger)
-    {
-        auto temp_result = _multi(start, end, other);
-        mu.lock();
-        result_poly = result_poly + temp_result;
-        mu.unlock();
-    }
-    else
-    {
-        auto temp_result = _multi(start, end, *this);
-        mu.lock();
-        result_poly = result_poly + temp_result;
-        mu.unlock();
-    }
+    // auto start = iter;
+    // if (start != end1) {
+    //     std::cout << "running outside\n";
+    //     if (p1_bigger)
+    //     {
+    //         auto temp_result = _multi(start, end1, other);
+    //         mu.lock();
+    //         result_poly = result_poly + temp_result;
+    //         mu.unlock();
+    //     }
+    //     else
+    //     {
+    //         auto temp_result = _multi(start, end1, *this);
+    //         mu.lock();
+    //         result_poly = result_poly + temp_result;
+    //         mu.unlock();
+    //     }
+    // }
 
     for (auto &t : threads)
     {
@@ -287,7 +301,7 @@ polynomial polynomial::operator%(const polynomial &divisor) const
         polynomial tPoly = polynomial(tVec.begin(), tVec.end());
         rem = rem + ((divisor * tPoly) * (-1));
     }
-    
+
     return rem;
 }
 
