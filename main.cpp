@@ -112,10 +112,10 @@ int main()
     /** We're doing (x+1)^2, so solution is x^2 + 2x + 1*/
 
 
-    // polynomial t1 = readFile("simple_poly.txt");
-    // // int value = 5;
-    // polynomial t2 = readOutputFile("result.txt");
-    // std::cout << bool(t1.canonical_form() ==t2.canonical_form()) << std::endl;
+    polynomial t1 = readFile("simple_poly.txt");
+    // int value = 5;
+    polynomial t2 = readOutputFile("result.txt");
+    std::cout << bool(t1.canonical_form() ==t2.canonical_form()) << std::endl;
     // auto poly2 = t1 * value;
     // poly2.print();
     // return 0;
