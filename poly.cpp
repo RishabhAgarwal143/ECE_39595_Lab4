@@ -143,7 +143,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     int size = this->polynomial_map.size() < other.polynomial_map.size() ? other.polynomial_map.size() : this->polynomial_map.size();
     bool p1_bigger = this->polynomial_map.size() < other.polynomial_map.size() ? false : true;
     int num_threads;
-    if (size < 150)
+    if (size < 500)
     {
 
         polynomial result = _multi(this->polynomial_map.begin(), this->polynomial_map.end(), other);
@@ -199,7 +199,6 @@ polynomial polynomial::operator*(const polynomial &other) const
     auto start = iter;
     if (p1_bigger)
     {
-
         auto temp_result = _multi(start, end, other);
         mu.lock();
         result_poly = result_poly + temp_result;
@@ -250,20 +249,14 @@ polynomial polynomial::operator%(const polynomial &divisor) const
 {
 
     polynomial rem = *this;
-    polynomial q;
-    polynomial divisor1 = divisor;
-    while (rem.find_degree_of() != 0 && (rem.find_degree_of() >= divisor1.find_degree_of()))
+    while (rem.find_degree_of() != 0 && (rem.find_degree_of() >= divisor.degree))
     {
-        power powerDiff = rem.find_degree_of() - divisor1.find_degree_of();
-        coeff coeffDiff = rem.polynomial_map.at(rem.find_degree_of()) / divisor1.polynomial_map.at(divisor1.find_degree_of());
-
+        power powerDiff = rem.degree - divisor.degree;
+        coeff coeffDiff = rem.polynomial_map.at(rem.degree) / divisor.polynomial_map.at(divisor.degree);
         auto tPair = std::make_pair(powerDiff, coeffDiff);
         std::vector<std::pair<power, coeff>> tVec = {tPair};
         polynomial tPoly = polynomial(tVec.begin(), tVec.end());
-        polynomial temp = ((divisor1 * tPoly) * (-1));
-        rem = temp+rem;
-
-        // break;
+        rem = ((divisor * tPoly) * (-1)) +rem;
     }
 
     return rem;
