@@ -51,10 +51,11 @@ polynomial::polynomial(const polynomial &other)
 void polynomial::print(std::vector<std::pair<power, coeff>> poly) const
 {
     // auto iter = this->powers_in_hash.end();
-    for (auto i : poly){
-        std::cout << i.second << "x^" << i.first <<" +";
+    for (auto i : poly)
+    {
+        std::cout << i.second << "x^" << i.first << " +";
     }
-    std::cout <<std::endl;
+    std::cout << std::endl;
     std::cout << "|END|" << std::endl;
 }
 
@@ -139,34 +140,33 @@ polynomial polynomial::operator*(const polynomial &other) const
     int num_threads;
     if (size < 200)
     {
-        
+
         polynomial result = _multi(this->polynomial_map.begin(), this->polynomial_map.end(), other);
         result.degree = this->degree * other.degree;
         return result;
-
     }
     else
     {
         num_threads = 8;
     }
 
-    int num_elements_per_thread = size / num_threads;
+    int num_elements_per_thread = size / (num_threads + 1);
     int num_elements_last_thread = size % num_threads;
 
     polynomial result_poly;
     std::mutex mu;
 
-    auto iter = this->polynomial_map.begin();
-    auto end = this->polynomial_map.end();
+    auto iter = this->polynomial_map.cbegin();
+    auto end = this->polynomial_map.cend();
 
     if (!p1_bigger)
     {
-        iter = other.polynomial_map.begin();
-        end = other.polynomial_map.end();
+        iter = other.polynomial_map.cbegin();
+        end = other.polynomial_map.cend();
     }
 
     std::vector<std::thread> threads;
-    for (int i = 0; i < num_threads-1; i++)
+    for (int i = 0; i < num_threads; i++)
     {
         auto start = iter;
         iter = std::next(iter, num_elements_per_thread);
@@ -194,21 +194,23 @@ polynomial polynomial::operator*(const polynomial &other) const
     auto start = iter;
     if (p1_bigger)
     {
-        threads.emplace_back([&result_poly, start, end,other, &mu]()
-                             {
-                auto temp_result = _multi(start, end, other);
-                mu.lock();
-                result_poly = result_poly + temp_result;
-                mu.unlock(); });
-    }
-    else
-    {
-        threads.emplace_back([&result_poly, start, end, other,  &mu]()
-                             {
+        // threads.emplace_back([&result_poly, start, end,other, &mu]()
+        //                      {
         auto temp_result = _multi(start, end, other);
         mu.lock();
         result_poly = result_poly + temp_result;
-        mu.unlock(); });
+        mu.unlock();
+        // });
+    }
+    else
+    {
+        // threads.emplace_back([&result_poly, start, end, *this,  &mu]()
+        //                      {
+        auto temp_result = _multi(start, end, *this);
+        mu.lock();
+        result_poly = result_poly + temp_result;
+        mu.unlock();
+        // });
     }
 
     for (auto &t : threads)
@@ -274,18 +276,19 @@ size_t polynomial::find_degree_of()
 
 std::vector<std::pair<power, coeff>> polynomial::canonical_form() const
 {
-    std::map<power,int> map;
-    for(auto i : this->polynomial_map){
+    std::map<power, int> map;
+    for (auto i : this->polynomial_map)
+    {
         power x = i.first;
         coeff y = i.second;
-        map.insert({x,y});
+        map.insert({x, y});
     }
-    
+
     // for(auto)
     std::vector<std::pair<power, coeff>> poly;
 
     auto ele = map.end();
-    while(ele != map.begin())
+    while (ele != map.begin())
     {
         ele--;
         poly.push_back(std::make_pair(ele->first, ele->second));
