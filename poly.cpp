@@ -120,6 +120,12 @@ polynomial polynomial::operator+(const polynomial &other) const
         }
     }
     p1.degree = 0;
+    if(this->degree > other.degree){
+        p1.degree = this->degree;
+    }
+    else if(this->degree < other.degree){
+        p1.degree = other.degree;
+    }
     for (auto i : p1.polynomial_map)
     {
         if (p1.degree < i.first)
@@ -144,31 +150,6 @@ polynomial polynomial::operator+(const int other) const
     }
     return p1;
 }
-
-// template <typename Iter>
-// static polynomial _multi(Iter begin, Iter end, const polynomial &second)
-// {
-
-//     polynomial out;
-//     out.polynomial_map.clear();
-
-//     // iterate through p1 and p2 sets and multply each term corresponding to the power
-//     for (auto it1 = begin; it1 != end; it1++)
-//     {
-//         for (auto it2 = second.polynomial_map.begin(); it2 != second.polynomial_map.end(); it2++)
-//         {
-//             if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
-//             {
-//                 out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
-//             }
-//             else
-//             {
-//                 out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
-//             }
-//         }
-//     }
-//     return out;
-// }
 
 polynomial polynomial::operator*(const polynomial &other) const
 {
