@@ -37,7 +37,7 @@ int main()
 
     /** This holds (x+1), which we'll pass to each polynomial */
     std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}};
-    std::vector<std::pair<power, coeff>> poly_input1 = {{2,2}, {0,2}};
+    std::vector<std::pair<power, coeff>> poly_input1 = {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
     polynomial p1(poly_input.begin(), poly_input.end());
     p1.print();
     polynomial p2(poly_input1.begin(), poly_input1.end());
