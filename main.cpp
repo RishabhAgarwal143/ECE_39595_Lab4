@@ -112,9 +112,9 @@ int main()
     /** We're doing (x+1)^2, so solution is x^2 + 2x + 1*/
 
 
-    polynomial t1 = readFile("simple_poly.txt");
-    polynomial t2 = readOutputFile("result.txt");
-    std::cout << bool(t1.canonical_form() ==t2.canonical_form()) << std::endl;
+    // polynomial t1 = readFile("simple_poly.txt");
+    // polynomial t2 = readOutputFile("result.txt");
+    // std::cout << bool(t1.canonical_form() ==t2.canonical_form()) << std::endl;
     // auto poly2 = t1 * value;
     // poly2.print();
     // return 0;
@@ -143,14 +143,14 @@ int main()
     // std::vector<std::pair<power, coeff>> solution = {{2,1}, {1,2}, {0,1}};
 
     // /** This holds (x+1), which we'll pass to each polynomial */
-    std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}, {10,3}};
-    std::vector<std::pair<power, coeff>> poly_input1= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
-    polynomial p1(poly_input.begin(), poly_input.end());
-    p1.canonical_form();
-    polynomial p2(poly_input1.begin(), poly_input1.end());
-    p2.canonical_form();
-    auto p3 = p1*2;
-    p3.print(p3.canonical_form());
+    // std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}, {10,3}};
+    // std::vector<std::pair<power, coeff>> poly_input1= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
+    // polynomial p1(poly_input.begin(), poly_input.end());
+    // p1.canonical_form();
+    // polynomial p2(poly_input1.begin(), poly_input1.end());
+    // p2.canonical_form();
+    // auto p3 = p1*2;
+    // p3.print(p3.canonical_form());
     // std::optional<double> result = poly_test(p1, p2, solution);
     
     // std::vector<std::pair<power, coeff>> poly_input1 = {{7, 1}};
@@ -193,19 +193,16 @@ int main()
     // assert(result1.canonical_form() == p333);
 
     // // Test case 2: Divisor is smaller than dividend
-    // std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
-    // std::vector<std::pair<power, coeff>> p4({{1, 1}, {0, 1}});
-    // std::vector<std::pair<power, coeff>> expected({{1, 1}, {0, 1}});
-    // polynomial p31(p3.begin(), p3.end());
-    // polynomial p41(p4.begin(), p4.end());
-    // std::cout << p41.find_degree_of() <<std::endl;
-    // auto result1 = p31 % p41;
-    // auto test = result1.canonical_form();
-    // for(auto t :test){
-    //     std::cout << t.first << " ," << t.second << std::endl;
-    // }
-    // result1.print();
-    // assert(result1.canonical_form() == expected);
+    std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
+    std::vector<std::pair<power, coeff>> p4({{1, 1}, {0, 1}});
+    std::vector<std::pair<power, coeff>> expected({{0, 0}});
+    polynomial p31(p3.begin(), p3.end());
+    polynomial p41(p4.begin(), p4.end());
+    std::cout << p41.find_degree_of() <<std::endl;
+    polynomial result1 = p31 % p41;
+
+    result1.print(result1.canonical_form());
+    assert(result1.canonical_form() == expected);
    
     // std::vector<std::pair<power, coeff>> p5({{2, 1}, {1, 2}, {0, 1}});
     // std::vector<std::pair<power, coeff>> p6({{2, 1}, {1, 2}, {0, 1}});
