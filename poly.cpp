@@ -77,7 +77,7 @@ polynomial polynomial::operator+(const polynomial &other) const
     }
     for (auto elem : other.polynomial_map)
     {
-        std::cout << "Hey" << (elem.first) << std::endl;
+        // std::cout << "Hey" << (elem.first) << std::endl;
         if (p1.polynomial_map.find(elem.first) == p1.polynomial_map.end())
         {
             p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
@@ -147,7 +147,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     {
 
         polynomial result = _multi(this->polynomial_map.begin(), this->polynomial_map.end(), other);
-        result.degree = this->degree * other.degree;
+        result.degree = this->degree + other.degree;
         return result;
     }
     else
@@ -218,7 +218,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     {
         t.join();
     }
-    result_poly.degree = this->degree * other.degree;
+    result_poly.degree = this->degree + other.degree;
     return result_poly;
 }
 
@@ -254,14 +254,15 @@ polynomial polynomial::operator%(const polynomial &divisor) const
     polynomial divisor1 = divisor;
     while (rem.find_degree_of() != 0 && (rem.find_degree_of() >= divisor1.find_degree_of()))
     {
-        std::cout << rem.degree << "," << divisor1.degree << std::endl;
         power powerDiff = rem.find_degree_of() - divisor1.find_degree_of();
         coeff coeffDiff = rem.polynomial_map.at(rem.find_degree_of()) / divisor1.polynomial_map.at(divisor1.find_degree_of());
 
         auto tPair = std::make_pair(powerDiff, coeffDiff);
         std::vector<std::pair<power, coeff>> tVec = {tPair};
         polynomial tPoly = polynomial(tVec.begin(), tVec.end());
-        rem = ((divisor1 * tPoly) * (-1)) + rem;
+        polynomial temp = ((divisor1 * tPoly) * (-1));
+        rem = temp+rem;
+
         // break;
     }
 
