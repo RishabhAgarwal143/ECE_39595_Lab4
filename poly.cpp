@@ -69,32 +69,63 @@ polynomial &polynomial::operator=(const polynomial &other)
 
 polynomial polynomial::operator+(const polynomial &other) const
 {
+    polynomial p1;
+    bool p1_bigger = this->polynomial_map.size() < other.polynomial_map.size() ? false : true;
+    if (!p1_bigger)
+    {
+        p1 = *this;
 
-    polynomial p1 = *this;
-    if(p1.degree == other.degree)
-    {
-        p1.degree = 0;
-    }
-    for (auto elem : other.polynomial_map)
-    {
-        // std::cout << "Hey" << (elem.first) << std::endl;
-        if (p1.polynomial_map.find(elem.first) == p1.polynomial_map.end())
+        for (auto elem : other.polynomial_map)
         {
-            p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
-            p1.polynomial_map.insert({elem.first, elem.second});
-        }
-        else
-        {
-            p1.polynomial_map.at(elem.first) += elem.second;
-            if (p1.polynomial_map.at(elem.first) == 0)
+            // std::cout << "Hey" << (elem.first) << std::endl;
+            if (p1.polynomial_map.find(elem.first) == p1.polynomial_map.end())
             {
-                p1.polynomial_map.erase(elem.first);
-                continue;
+                // p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
+                p1.polynomial_map.insert({elem.first, elem.second});
             }
-            p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
+            else
+            {
+                p1.polynomial_map.at(elem.first) += elem.second;
+                if (p1.polynomial_map.at(elem.first) == 0)
+                {
+                    p1.polynomial_map.erase(elem.first);
+                    continue;
+                }
+                // p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
+            }
+        }
+    }
+    else{
+        p1 = other;
+
+        for (auto elem : this->polynomial_map)
+        {
+            // std::cout << "Hey" << (elem.first) << std::endl;
+            if (p1.polynomial_map.find(elem.first) == p1.polynomial_map.end())
+            {
+                // p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
+                p1.polynomial_map.insert({elem.first, elem.second});
+            }
+            else
+            {
+                p1.polynomial_map.at(elem.first) += elem.second;
+                if (p1.polynomial_map.at(elem.first) == 0)
+                {
+                    p1.polynomial_map.erase(elem.first);
+                    continue;
+                }
+                // p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
+            }
+        }
+    }
+    p1.degree = 0;
+    for (auto i: p1.polynomial_map){
+        if(p1.degree < i.first){
+            p1.degree = i.first;
         }
     }
     return p1;
+
 }
 
 polynomial polynomial::operator+(const int other) const
@@ -143,7 +174,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     int size = this->polynomial_map.size() < other.polynomial_map.size() ? other.polynomial_map.size() : this->polynomial_map.size();
     bool p1_bigger = this->polynomial_map.size() < other.polynomial_map.size() ? false : true;
     int num_threads;
-    if (size < 500)
+    if (size < 200)
     {
 
         polynomial result = _multi(this->polynomial_map.begin(), this->polynomial_map.end(), other);
@@ -156,7 +187,6 @@ polynomial polynomial::operator*(const polynomial &other) const
     }
 
     int num_elements_per_thread = size / (num_threads);
-    int num_elements_last_thread = size % num_threads;
 
     polynomial result_poly;
     std::mutex mu;
@@ -210,7 +240,6 @@ polynomial polynomial::operator*(const polynomial &other) const
         mu.lock();
         result_poly = result_poly + temp_result;
         mu.unlock();
-
     }
 
     for (auto &t : threads)
@@ -256,9 +285,9 @@ polynomial polynomial::operator%(const polynomial &divisor) const
         auto tPair = std::make_pair(powerDiff, coeffDiff);
         std::vector<std::pair<power, coeff>> tVec = {tPair};
         polynomial tPoly = polynomial(tVec.begin(), tVec.end());
-        rem = ((divisor * tPoly) * (-1)) +rem;
+        rem = rem + ((divisor * tPoly) * (-1));
     }
-
+    
     return rem;
 }
 
