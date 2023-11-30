@@ -48,14 +48,13 @@ polynomial::polynomial(const polynomial &other)
     // this->powers_in_hash = other.powers_in_hash;
 }
 
-void polynomial::print() const
+void polynomial::print(std::vector<std::pair<power, coeff>> poly) const
 {
     // auto iter = this->powers_in_hash.end();
-    for (auto i : polynomial_map)
-    {
-        std::cout << i.second << "x^" << i.first << " + ";
-        // poly.push_back(std::make_pair(*iter, this->polynomial_map.at(*iter)));
+    for (auto i : poly){
+        std::cout << i.second << "x^" << i.first <<" +";
     }
+    std::cout <<std::endl;
     std::cout << "|END|" << std::endl;
 }
 
@@ -228,7 +227,7 @@ polynomial polynomial::operator*(const int other) const
         return p1;
     }
     polynomial p1 = *this;
-    for (auto i : this->polynomial_map)
+    for (auto &i : p1.polynomial_map)
     {
         i.second *= other;
     }
@@ -296,9 +295,9 @@ std::vector<std::pair<power, coeff>> polynomial::canonical_form() const
     {
         poly.push_back(std::make_pair(0, 0));
     }
-    for (auto i : poly){
-        std::cout << i.second << "x^" << i.first <<" +";
-    }
-    std::cout <<std::endl;
+    // for (auto i : poly){
+    //     std::cout << i.second << "x^" << i.first <<" +";
+    // }
+    // std::cout <<std::endl;
     return poly;
 }

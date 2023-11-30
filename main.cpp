@@ -97,7 +97,7 @@ std::optional<double> poly_test(polynomial& p1,
     auto p3_can_form = p3.canonical_form();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    p3.print();
+    p3.print(p3.canonical_form());
 
     if (p3_can_form != solution)
     {
@@ -149,8 +149,8 @@ int main()
     p1.canonical_form();
     polynomial p2(poly_input1.begin(), poly_input1.end());
     p2.canonical_form();
-    auto p3 = p1+p2;
-    p3.canonical_form();
+    auto p3 = p1*2;
+    p3.print(p3.canonical_form());
     // std::optional<double> result = poly_test(p1, p2, solution);
     
     // std::vector<std::pair<power, coeff>> poly_input1 = {{7, 1}};

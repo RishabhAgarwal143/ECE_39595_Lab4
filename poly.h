@@ -16,9 +16,8 @@ class polynomial
 {
 public:
     std::vector<std::pair<power, coeff>> poly;
-    // std::set<int> powers_in_hash;
     std::unordered_map<power,coeff> polynomial_map;
-    int degree = 0;
+    power degree = 0;
     /**
      * @brief Construct a new polynomial object that is the number 0 (ie. 0x^0)
      *
@@ -55,7 +54,7 @@ public:
      * Only used for debugging, isn't graded.
      *
      */
-    void print() const;
+    void print(std::vector<std::pair<power, coeff>> poly) const;
 
     /**
      * @brief Turn the current polynomial instance into a deep copy of another
