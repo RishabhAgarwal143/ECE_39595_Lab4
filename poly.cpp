@@ -151,10 +151,13 @@ polynomial polynomial::operator*(const polynomial &other) const
     int size = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? p2.powers_in_hash.size() : p1.powers_in_hash.size();
     bool p1_bigger = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? false : true;
     // return _multi(p1.powers_in_hash.begin(),p1.powers_in_hash.end(),p1,p2,8);
-    int num_threads =32;
-    if (size < num_threads)
+    int num_threads;
+    if (size < 100)
     {
-        num_threads = size;
+        return _multi(this->powers_in_hash.begin(),this->powers_in_hash.end(),p1,p2,9);
+    }
+    else{
+        num_threads =size/100;
     }
 
     int num_elements_per_thread = size / num_threads;
@@ -258,7 +261,7 @@ polynomial polynomial::operator%(const polynomial &divisor) const
     while (rem.find_degree_of() != 0 && (rem.find_degree_of() >= divisor1.find_degree_of()))
     {
 
-        power powerDiff = *rem_iter - *div_iter;
+        power powerDiff = rem.polynomial_map.at(rem.find_degree_of()) - *div_iter;
         coeff coeffDiff = rem.polynomial_map.at(*rem_iter) / divisor1.polynomial_map.at(*div_iter);
 
         auto tPair = std::make_pair(powerDiff, coeffDiff);

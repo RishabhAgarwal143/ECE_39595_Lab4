@@ -115,6 +115,7 @@ int main()
     polynomial t1 = readFile("simple_poly.txt");
     polynomial t2 = readOutputFile("result.txt");
     // t1.print();
+    std::cout << t1.find_degree_of();
     auto t11 = t1.canonical_form();
 
     auto t22 = t2.canonical_form();
