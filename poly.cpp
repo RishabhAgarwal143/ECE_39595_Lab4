@@ -145,30 +145,30 @@ polynomial polynomial::operator+(const int other) const
     return p1;
 }
 
-template <typename Iter>
-static polynomial _multi(Iter begin, Iter end, const polynomial &second)
-{
+// template <typename Iter>
+// static polynomial _multi(Iter begin, Iter end, const polynomial &second)
+// {
 
-    polynomial out;
-    out.polynomial_map.clear();
+//     polynomial out;
+//     out.polynomial_map.clear();
 
-    // iterate through p1 and p2 sets and multply each term corresponding to the power
-    for (auto it1 = begin; it1 != end; it1++)
-    {
-        for (auto it2 = second.polynomial_map.begin(); it2 != second.polynomial_map.end(); it2++)
-        {
-            if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
-            {
-                out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
-            }
-            else
-            {
-                out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
-            }
-        }
-    }
-    return out;
-}
+//     // iterate through p1 and p2 sets and multply each term corresponding to the power
+//     for (auto it1 = begin; it1 != end; it1++)
+//     {
+//         for (auto it2 = second.polynomial_map.begin(); it2 != second.polynomial_map.end(); it2++)
+//         {
+//             if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
+//             {
+//                 out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
+//             }
+//             else
+//             {
+//                 out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
+//             }
+//         }
+//     }
+//     return out;
+// }
 
 polynomial polynomial::operator*(const polynomial &other) const
 {
@@ -176,12 +176,25 @@ polynomial polynomial::operator*(const polynomial &other) const
     int size = this->polynomial_map.size() < other.polynomial_map.size() ? other.polynomial_map.size() : this->polynomial_map.size();
     bool p1_bigger = this->polynomial_map.size() < other.polynomial_map.size() ? false : true;
     int num_threads;
-    if (size < 160)
+    if (size < 150)
     {
-
-        polynomial result = _multi(this->polynomial_map.begin(), this->polynomial_map.end(), other);
-        result.degree = this->degree + other.degree;
-        return result;
+        polynomial out;
+        for (auto it1 = this->polynomial_map.begin(); it1 != this->polynomial_map.end(); it1++)
+        {
+            for (auto it2 = other.polynomial_map.begin(); it2 != other.polynomial_map.end(); it2++)
+            {
+                if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
+                {
+                    out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
+                }
+                else
+                {
+                    out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
+                }
+            }
+        }
+        out.degree = this->degree + other.degree;
+        return out;
     }
     else
     {
@@ -203,13 +216,10 @@ polynomial polynomial::operator*(const polynomial &other) const
     }
 
     std::vector<std::thread> threads;
-    int ct = 0;
     for (int i = 0; i < num_threads; i++)
     {
         auto start = iter;
         iter = std::next(iter, num_elements_per_thread);
-        ct += num_elements_per_thread;
-        // std::cout << "CT IS: " << ct << "\n";
 
         auto end = iter;
         if (i == num_threads - 1)
@@ -221,19 +231,47 @@ polynomial polynomial::operator*(const polynomial &other) const
         {
             threads.emplace_back([&result_poly, start, end, other, &mu]()
                                  {
-                // std::cout << i <<" running inside thread\n" ;
-                auto temp_result = _multi(start, end, other);
+                polynomial out;
+                for (auto it1 = start; it1 != end; it1++)
+                {
+                    for (auto it2 = other.polynomial_map.begin(); it2 != other.polynomial_map.end(); it2++)
+                    {
+                        if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
+                        {
+                            out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
+                        }
+                        else
+                        {
+                            out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
+                        }
+                    }
+                }
                 mu.lock();
-                result_poly = result_poly + temp_result;
+                result_poly = result_poly + out;
                 mu.unlock(); });
         }
         else
         {
             threads.emplace_back([&result_poly, start, end, *this, &mu]()
                                  {
-                auto temp_result = _multi(start, end, *this);
+                polynomial out;
+                for (auto it1 = start; it1 != end; it1++)
+                {
+                    for (auto it2 = this->polynomial_map.begin(); it2 != this->polynomial_map.end(); it2++)
+                    {
+                        if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
+                        {
+                            out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
+                        }
+                        else
+                        {
+                            out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
+                        }
+                    }
+                }
+                
                 mu.lock();
-                result_poly = result_poly + temp_result;
+                result_poly = result_poly + out;
                 mu.unlock(); });
         }
     }
