@@ -58,6 +58,9 @@ void polynomial::print() const
     for (int ele = this->powers_in_hash.size() -1  ; ele >= 0; ele--)
     {
         iter--;
+        if(this->polynomial_map.at(*iter) == 0){
+            continue;
+        }
         std::cout << this->polynomial_map.at(*iter) << "x^" << *iter << " + ";
         // poly.push_back(std::make_pair(*iter, this->polynomial_map.at(*iter)));
     }
@@ -141,20 +144,21 @@ polynomial polynomial::operator*(const polynomial &other) const
 
     polynomial p1 = *this;
     polynomial p2 = other;
-
+    auto remp = p2.powers_in_hash.begin();
+    std::cout << *remp << "\n";
     int size = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? p2.powers_in_hash.size() : p1.powers_in_hash.size();
     bool p1_bigger = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? false : true;
 
-    int num_threads = 8;
+    int num_threads =8;
     if (size < 8)
     {
         num_threads = size;
     }
 
     int num_elements_per_thread = size / num_threads;
-    // printf("num_elements_per_thread: %d\n", num_elements_per_thread);
+    printf("num_elements_per_thread: %d\n", num_elements_per_thread);
     int num_elements_last_thread = size % num_threads;
-    // printf("num_elements_last_thread: %d\n", num_elements_last_thread);
+    printf("num_elements_last_thread: %d\n", num_elements_last_thread);
 
     polynomial result_poly;
     std::mutex result_mutex;
@@ -171,7 +175,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     std::vector<std::thread> threads;
     for(int i = 0; i < num_threads-1; i++){
         auto start = iter;
-        std::advance(iter,num_elements_per_thread);
+        std::next(iter,num_elements_per_thread);
         auto end = iter;
 
         if (p1_bigger) {
@@ -285,6 +289,9 @@ std::vector<std::pair<power, coeff>> polynomial::canonical_form() const
     for (int ele = this->powers_in_hash.size() -1  ; ele >= 0; ele--)
     {
         iter--;
+        if(this->polynomial_map.at(*iter) == 0){
+            continue;
+        }
         poly.push_back(std::make_pair(*iter, this->polynomial_map.at(*iter)));
     }
     return poly;

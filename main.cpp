@@ -32,7 +32,7 @@ polynomial readOutputFile(std::string filename) {
         p1.powers_in_hash.insert(power);
         p1.polynomial_map.insert({power, coeff});
     }
-    p1.print();
+    // p1.print();
     return p1;
 }
 
@@ -40,7 +40,10 @@ polynomial readFile(std::string filename) {
     // read simple poly.txt till semicolon then rest of the file is poly2
     polynomial p1;
     polynomial p2;
-
+    p2.polynomial_map.clear();
+    p2.powers_in_hash.clear();
+    p1.polynomial_map.clear();
+    p1.powers_in_hash.clear();
     FILE *fp = fopen(filename.c_str(), "r");
     if (fp == NULL)
     {
@@ -55,12 +58,12 @@ polynomial readFile(std::string filename) {
     while (fscanf(fp, "%dx^%d;", &coeff, &power) == 2)
     {
 
-        if (power == 0)
-        {
-            p1.polynomial_map.at(power) = coeff;
-            p1.powers_in_hash.insert(power);
-            continue;
-        }
+        // if (power == 0)
+        // {
+        //     p1.polynomial_map.at(power) = coeff;
+        //     p1.powers_in_hash.insert(power);
+        //     continue;
+        // }
         p1.powers_in_hash.insert(power);
         p1.polynomial_map.insert({power, coeff});
     }
@@ -77,7 +80,6 @@ polynomial readFile(std::string filename) {
         p2.powers_in_hash.insert(power);
         p2.polynomial_map.insert({power, coeff});
     }
-    // p2.print();
 
     return p1 * p2;
 }
@@ -112,8 +114,22 @@ int main()
 
     polynomial t1 = readFile("simple_poly.txt");
     polynomial t2 = readOutputFile("result.txt");
-    bool test = t1.canonical_form() == t2.canonical_form();
-    std::cout << test << std::endl;
+    // t1.print();
+    auto t11 = t1.canonical_form();
+
+    auto t22 = t2.canonical_form();
+    int ct = 0;
+    for (int i = 0 ; i < t11.size();i++){
+        if(!(t11.at(i) == t22.at(i))){
+            std::cout << i << std::endl;
+            std::cout << t11.at(i).second << "x^" << t11.at(i).first << " " << t22.at(i).second << "x^" << t22.at(i).first  << "\n"; 
+            if (ct == 10) {
+                break;
+            }
+            ct++;
+        }
+    }
+    // std::cout << test << std::endl;
     return 0;
 
 
