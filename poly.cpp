@@ -22,8 +22,9 @@ polynomial::polynomial(Iter begin, Iter end)
     {
         return;
     }
-    this->powers_in_hash.insert(begin->first);
+    // this->powers_in_hash.insert(begin->first);
     this->polynomial_map.insert({begin->first, begin->second});
+    this->degree = begin->first;
     begin++;
     while (begin != end)
     {
@@ -33,8 +34,9 @@ polynomial::polynomial(Iter begin, Iter end)
             continue;
         }
 
-        this->powers_in_hash.insert(begin->first);
+        // this->powers_in_hash.insert(begin->first);
         this->polynomial_map.insert({begin->first, begin->second});
+        this->degree = this->degree > begin->first ? this->degree : begin->first;
         begin++;
     }
 }
@@ -42,20 +44,16 @@ polynomial::polynomial(Iter begin, Iter end)
 polynomial::polynomial(const polynomial &other)
 {
     this->polynomial_map = other.polynomial_map;
-    this->powers_in_hash = other.powers_in_hash;
+    this->degree = other.degree;
+    // this->powers_in_hash = other.powers_in_hash;
 }
 
 void polynomial::print() const
 {
-    auto iter = this->powers_in_hash.end();
-    for (int ele = this->powers_in_hash.size() - 1; ele >= 0; ele--)
+    // auto iter = this->powers_in_hash.end();
+    for (auto i : polynomial_map)
     {
-        iter--;
-        if (this->polynomial_map.at(*iter) == 0)
-        {
-            continue;
-        }
-        std::cout << this->polynomial_map.at(*iter) << "x^" << *iter << " + ";
+        std::cout << i.second << "x^" << i.first << " + ";
         // poly.push_back(std::make_pair(*iter, this->polynomial_map.at(*iter)));
     }
     std::cout << "|END|" << std::endl;
@@ -64,9 +62,8 @@ void polynomial::print() const
 polynomial &polynomial::operator=(const polynomial &other)
 {
     this->polynomial_map.clear();
-    this->powers_in_hash.clear();
+    this->degree = other.degree;
     this->polynomial_map = other.polynomial_map;
-    this->powers_in_hash = other.powers_in_hash;
     return *this;
 }
 
@@ -74,19 +71,21 @@ polynomial polynomial::operator+(const polynomial &other) const
 {
 
     polynomial p1 = *this;
-    for (auto elem : other.powers_in_hash)
+    for (auto elem : other.polynomial_map)
     {
-        if (p1.polynomial_map.find(elem) == p1.polynomial_map.end())
+        if (p1.polynomial_map.find(elem.first) == p1.polynomial_map.end())
         {
-            p1.polynomial_map.insert({elem, other.polynomial_map.at(elem)});
+            p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
+            p1.polynomial_map.insert({elem.first, elem.second});
         }
         else
         {
-            p1.polynomial_map.at(elem) += other.polynomial_map.at(elem);
-        }
-        if (p1.polynomial_map.at(elem) == 0)
-        {
-            p1.polynomial_map.erase(elem);
+            if (p1.polynomial_map.at(elem.first) + elem.second == 0)
+            {
+                continue;
+            }
+            p1.degree = p1.degree > elem.first ? p1.degree : elem.first;
+            p1.polynomial_map.at(elem.first) += elem.second;
         }
     }
     return p1;
@@ -108,26 +107,25 @@ polynomial polynomial::operator+(const int other) const
 }
 
 template <typename Iter>
-static polynomial _multi(Iter begin, Iter end, const polynomial &first, const polynomial &second)
+static polynomial _multi(Iter begin, Iter end, const polynomial &second)
 {
 
     polynomial out;
-    out.powers_in_hash.clear();
+    // out.powers_in_hash.clear();
     out.polynomial_map.clear();
 
     // iterate through p1 and p2 sets and multply each term corresponding to the power
     for (auto it1 = begin; it1 != end; it1++)
     {
-        for (auto it2 = second.powers_in_hash.begin(); it2 != second.powers_in_hash.end(); it2++)
+        for (auto it2 = second.polynomial_map.begin(); it2 != second.polynomial_map.end(); it2++)
         {
-            out.powers_in_hash.insert(*it1 + *it2);
-            if (out.polynomial_map.find(*it1 + *it2) != out.polynomial_map.end())
+            if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
             {
-                out.polynomial_map.at(*it1 + *it2) += first.polynomial_map.at(*it1) * second.polynomial_map.at(*it2);
+                out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
             }
             else
             {
-                out.polynomial_map.insert({*it1 + *it2, first.polynomial_map.at(*it1) * second.polynomial_map.at(*it2)});
+                out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
             }
         }
     }
@@ -137,12 +135,16 @@ static polynomial _multi(Iter begin, Iter end, const polynomial &first, const po
 polynomial polynomial::operator*(const polynomial &other) const
 {
 
-    int size = this->powers_in_hash.size() < other.powers_in_hash.size() ? other.powers_in_hash.size() : this->powers_in_hash.size();
-    bool p1_bigger = this->powers_in_hash.size() < other.powers_in_hash.size() ? false : true;
+    int size = this->polynomial_map.size() < other.polynomial_map.size() ? other.polynomial_map.size() : this->polynomial_map.size();
+    bool p1_bigger = this->polynomial_map.size() < other.polynomial_map.size() ? false : true;
     int num_threads;
     if (size < 200)
     {
-        return _multi(this->powers_in_hash.begin(), this->powers_in_hash.end(), *this, other);
+        
+        polynomial result = _multi(this->polynomial_map.begin(), this->polynomial_map.end(), other);
+        result.degree = this->degree * other.degree;
+        return result;
+
     }
     else
     {
@@ -155,13 +157,13 @@ polynomial polynomial::operator*(const polynomial &other) const
     polynomial result_poly;
     std::mutex mu;
 
-    auto iter = this->powers_in_hash.begin();
-    auto end = this->powers_in_hash.end();
+    auto iter = this->polynomial_map.begin();
+    auto end = this->polynomial_map.end();
 
     if (!p1_bigger)
     {
-        iter = other.powers_in_hash.begin();
-        end = other.powers_in_hash.end();
+        iter = other.polynomial_map.begin();
+        end = other.polynomial_map.end();
     }
 
     std::vector<std::thread> threads;
@@ -173,18 +175,18 @@ polynomial polynomial::operator*(const polynomial &other) const
 
         if (p1_bigger)
         {
-            threads.emplace_back([&result_poly, start, end, *this, other, &mu]()
+            threads.emplace_back([&result_poly, start, end, other, &mu]()
                                  {
-                auto temp_result = _multi(start, end, *this, other);
+                auto temp_result = _multi(start, end, other);
                 mu.lock();
                 result_poly = result_poly + temp_result;
                 mu.unlock(); });
         }
         else
         {
-            threads.emplace_back([&result_poly, start, end, *this, other, &mu]()
+            threads.emplace_back([&result_poly, start, end, *this, &mu]()
                                  {
-                auto temp_result = _multi(start, end, other, *this);
+                auto temp_result = _multi(start, end, *this);
                 mu.lock();
                 result_poly = result_poly + temp_result;
                 mu.unlock(); });
@@ -193,18 +195,18 @@ polynomial polynomial::operator*(const polynomial &other) const
     auto start = iter;
     if (p1_bigger)
     {
-        threads.emplace_back([&result_poly, start, end, *this, other, &mu]()
+        threads.emplace_back([&result_poly, start, end,other, &mu]()
                              {
-                auto temp_result = _multi(start, end, *this, other);
+                auto temp_result = _multi(start, end, other);
                 mu.lock();
                 result_poly = result_poly + temp_result;
                 mu.unlock(); });
     }
     else
     {
-        threads.emplace_back([&result_poly, start, end, other, *this, &mu]()
+        threads.emplace_back([&result_poly, start, end, other,  &mu]()
                              {
-        auto temp_result = _multi(start, end, other,*this);
+        auto temp_result = _multi(start, end, other);
         mu.lock();
         result_poly = result_poly + temp_result;
         mu.unlock(); });
@@ -214,7 +216,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     {
         t.join();
     }
-
+    result_poly.degree = this->degree * other.degree;
     return result_poly;
 }
 
@@ -226,9 +228,9 @@ polynomial polynomial::operator*(const int other) const
         return p1;
     }
     polynomial p1 = *this;
-    for (auto i : this->powers_in_hash)
+    for (auto i : this->polynomial_map)
     {
-        p1.polynomial_map.at(i) *= other;
+        i.second *= other;
     }
     return p1;
 }
@@ -259,7 +261,6 @@ polynomial polynomial::operator%(const polynomial &divisor) const
         auto tPair = std::make_pair(powerDiff, coeffDiff);
         std::vector<std::pair<power, coeff>> tVec = {tPair};
         polynomial tPoly = polynomial(tVec.begin(), tVec.end());
-        // q = q + tPoly;
         rem = rem + ((divisor1 * tPoly) * (-1));
         break;
     }
@@ -269,28 +270,31 @@ polynomial polynomial::operator%(const polynomial &divisor) const
 
 size_t polynomial::find_degree_of()
 {
-    auto iter = this->powers_in_hash.end();
-    if (iter != this->powers_in_hash.begin())
-    {
-        iter--;
-    }
-    return *iter;
+    // auto iter = this->powers_in_hash.end();
+    // if (iter != this->powers_in_hash.begin())
+    // {
+    //     iter--;
+    // }
+    // return *iter;
+    return this->degree;
 }
 
 std::vector<std::pair<power, coeff>> polynomial::canonical_form() const
 {
-    std::vector<std::pair<power, coeff>> poly;
-    auto iter = this->powers_in_hash.end();
-    polynomial dummy;
 
-    for (int ele = this->powers_in_hash.size() - 1; ele >= 0; ele--)
+    std::map<power,int> map;
+    for(auto i : this->polynomial_map){
+        power x = i.first;
+        coeff y = i.second;
+        map.insert({x,y});
+    }
+    
+    // for(auto)
+    std::vector<std::pair<power, coeff>> poly;
+
+    for (auto ele = map.end()--; ele != map.begin(); ele--)
     {
-        iter--;
-        if (this->polynomial_map.at(*iter) == 0)
-        {
-            continue;
-        }
-        poly.push_back(std::make_pair(*iter, this->polynomial_map.at(*iter)));
+        poly.push_back(std::make_pair(ele->first, ele->second));
     }
     if (poly.empty())
     {

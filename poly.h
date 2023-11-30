@@ -5,7 +5,7 @@
 #include <utility>
 #include <cstddef>
 #include <algorithm>
-#include <set>
+#include <map>
 #include <unordered_map>
 #include <thread>
 
@@ -16,9 +16,9 @@ class polynomial
 {
 public:
     std::vector<std::pair<power, coeff>> poly;
-    std::set<int> powers_in_hash;
-    std::unordered_map<int,int> polynomial_map;
-
+    // std::set<int> powers_in_hash;
+    std::unordered_map<power,coeff> polynomial_map;
+    int degree = 0;
     /**
      * @brief Construct a new polynomial object that is the number 0 (ie. 0x^0)
      *
@@ -39,7 +39,7 @@ public:
     polynomial(Iter begin, Iter end);
 
 
-    polynomial(std::set<int> power_set,std::unordered_map<int,int> coeff_map);
+    // polynomial(std::set<int> power_set,std::unordered_map<int,int> coeff_map);
 
     /**
      * @brief Construct a new polynomial object from an existing polynomial object

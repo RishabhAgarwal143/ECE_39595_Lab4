@@ -26,10 +26,10 @@ polynomial readOutputFile(std::string filename) {
         if (power == 0)
         {
             p1.polynomial_map.at(power) = coeff;
-            p1.powers_in_hash.insert(power);
+            // p1.powers_in_hash.insert(power);
             continue;
         }
-        p1.powers_in_hash.insert(power);
+        // p1.powers_in_hash.insert(power);
         p1.polynomial_map.insert({power, coeff});
     }
     // p1.print();
@@ -41,9 +41,9 @@ polynomial readFile(std::string filename) {
     polynomial p1;
     polynomial p2;
     p2.polynomial_map.clear();
-    p2.powers_in_hash.clear();
+    // p2.powers_in_hash.clear();/
     p1.polynomial_map.clear();
-    p1.powers_in_hash.clear();
+    // p1.powers_in_hash.clear();
     FILE *fp = fopen(filename.c_str(), "r");
     if (fp == NULL)
     {
@@ -64,7 +64,7 @@ polynomial readFile(std::string filename) {
         //     p1.powers_in_hash.insert(power);
         //     continue;
         // }
-        p1.powers_in_hash.insert(power);
+        // p1.powers_in_hash.insert(power);
         p1.polynomial_map.insert({power, coeff});
     }
 
@@ -75,9 +75,9 @@ polynomial readFile(std::string filename) {
         if (power == 0)
         {
             p2.polynomial_map.at(power) = coeff;
-            p2.powers_in_hash.insert(power);
+            // p2.powers_in_hash.insert(power);/
         }
-        p2.powers_in_hash.insert(power);
+        // p2.powers_in_hash.insert(power);
         p2.polynomial_map.insert({power, coeff});
     }
 
