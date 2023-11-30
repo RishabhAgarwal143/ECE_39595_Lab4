@@ -116,7 +116,7 @@ polynomial polynomial::operator+(const int other) const
 }
 
 template <typename Iter>
-static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &second)
+static polynomial _multi(Iter begin, Iter end,const polynomial &first,const polynomial &second)
 {
 
     // multiply bw begin end
@@ -148,17 +148,18 @@ static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &se
 polynomial polynomial::operator*(const polynomial &other) const
 {
 
-    std::set<int> new_powers;
-    std::unordered_map<int, int> new_map;
 
-    polynomial p1 = *this;
-    // polynomial p2 = other;
     int size = this->powers_in_hash.size() < other.powers_in_hash.size() ? other.powers_in_hash.size() : this->powers_in_hash.size();
     bool p1_bigger = this->powers_in_hash.size() < other.powers_in_hash.size() ? false : true;
     int num_threads;
-    if (size < 160)
+    if (size < 200)
     {
-        return _multi(this->powers_in_hash.begin(), this->powers_in_hash.end(), p1, p2);
+        if(p1_bigger){
+            return _multi(this->powers_in_hash.begin(), this->powers_in_hash.end(), *this, other);
+        }
+        else{
+            return _multi(this->powers_in_hash.begin(), this->powers_in_hash.end(), other, *this);
+        }
     }
     else
     {
@@ -198,9 +199,9 @@ polynomial polynomial::operator*(const polynomial &other) const
         }
         else
         {
-            threads.emplace_back([&result_poly, start, end, &p1, other, &mu]()
+            threads.emplace_back([&result_poly, start, end, *this, other, &mu]()
                                  {
-                auto temp_result = _multi(start, end, p1, other);
+                auto temp_result = _multi(start, end, other, *this);
                 mu.lock();
                 result_poly = result_poly + temp_result;
                 mu.unlock(); });
@@ -209,7 +210,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     auto start = iter;
     if (p1_bigger)
     {
-        auto temp_result = _multi(start, end, p1, other);
+        auto temp_result = _multi(start, end, *this, other);
         mu.lock();
         result_poly = result_poly + temp_result;
         mu.unlock();
@@ -224,7 +225,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     {
         // threads.emplace_back([&result_poly, start, end, &p1, &p2, &mu]()
         //                      {
-        auto temp_result = _multi(start, end, p2, p1);
+        auto temp_result = _multi(start, end, other,*this);
         mu.lock();
         result_poly = result_poly + temp_result;
         mu.unlock(); 
