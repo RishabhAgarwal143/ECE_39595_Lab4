@@ -3,8 +3,91 @@
 #include <optional>
 #include <vector>
 #include <cassert>
+#include <string.h>
+#include "poly.h"
 
-#include "poly_copy.h"
+polynomial readOutputFile(char* filename) {
+    polynomial p1;
+
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    // every line has a power and coeff in this format 463x^9997
+    // read in this format till semicolon
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int i = 0;
+    while ((read = getline(&line, &len, fp)) != -1)
+    {
+        if (line[0] == ';')
+        {
+            break;
+        }
+        char *token = strtok(line, "x^");
+        int coeff = atoi(token);
+        token = strtok(NULL, "x^");
+        int power = atoi(token);
+        p1.powers_in_hash.insert(power);
+        p1.polynomial_map.insert({power, coeff});
+    }
+
+    return p1;    
+}
+
+polynomial readFile(char* filename) {
+    // read simple poly.txt till semicolon then rest of the file is poly2
+    polynomial p1;
+    polynomial p2;
+
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    // every line has a power and coeff in this format 463x^9997
+    // read in this format till semicolon
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int i = 0;
+    while ((read = getline(&line, &len, fp)) != -1)
+    {
+        if (line[0] == ';')
+        {
+            break;
+        }
+        char *token = strtok(line, "x^");
+        int coeff = atoi(token);
+        token = strtok(NULL, "x^");
+        int power = atoi(token);
+        p1.powers_in_hash.insert(power);
+        p1.polynomial_map.insert({power, coeff});
+    }
+
+    // read the rest of the file in the same format
+    while ((read = getline(&line, &len, fp)) != -1)
+    {
+        char *token = strtok(line, "x^");
+        int coeff = atoi(token);
+        token = strtok(NULL, "x^");
+        int power = atoi(token);
+        p2.powers_in_hash.insert(power);
+        p2.polynomial_map.insert({power, coeff});
+    }
+
+    fclose(fp);
+    if (line)
+        free(line);
+    
+    return p1 * p2;
+}
 
 std::optional<double> poly_test(polynomial& p1,
                                 polynomial& p2,
@@ -17,7 +100,6 @@ std::optional<double> poly_test(polynomial& p1,
     polynomial p3 = p1 * p2;
 
     auto p3_can_form = p3.canonical_form();
-
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
     p3.print();
@@ -33,11 +115,22 @@ std::optional<double> poly_test(polynomial& p1,
 int main()
 {
     /** We're doing (x+1)^2, so solution is x^2 + 2x + 1*/
+
+
+    polynomial t1 = readFile("simple_poly.txt");
+    polynomial t2 = readOutputFile("result.txt");
+    bool test = t1.canonical_form() == t2.canonical_form();
+    std::cout << test << std::endl;
+
+
+
+
+
     std::vector<std::pair<power, coeff>> solution = {{2,1}, {1,2}, {0,1}};
 
     /** This holds (x+1), which we'll pass to each polynomial */
-    std::vector<std::pair<power, coeff>> poly_input1 = {{1,2}, {0,2}};
-    std::vector<std::pair<power, coeff>> poly_input= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
+    std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}, {10,3}};
+    std::vector<std::pair<power, coeff>> poly_input1= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
     polynomial p1(poly_input.begin(), poly_input.end());
     p1.print();
     polynomial p2(poly_input1.begin(), poly_input1.end());
@@ -77,23 +170,23 @@ int main()
     // }
 
     // Test case 1: Divisor is larger than dividend
-    // std::vector<std::pair<power, coeff>> p1{{0, 1}};
-    // std::vector<std::pair<power, coeff>> p2{{1, 1}};
-    // polynomial po1(p1.begin(), p1.end());
-    // polynomial po2(p2.begin(), p2.end());
-    // polynomial result = po1 % po2;
-    // assert(result.canonical_form() == p1);
+    std::vector<std::pair<power, coeff>> p333{{0, 1}};
+    std::vector<std::pair<power, coeff>> p444{{1, 1}};
+    polynomial po1(p333.begin(), p333.end());
+    polynomial po2(p444.begin(), p444.end());
+    polynomial result1 = po1 % po2;
+    assert(result1.canonical_form() == p333);
 
     // // Test case 2: Divisor is smaller than dividend
-    // std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
-    // std::vector<std::pair<power, coeff>> p4({{1, 1}, {0, 1}});
-    // std::vector<std::pair<power, coeff>> expected({{0, 0}});
-    // polynomial p31(p3.begin(), p3.end());
-    // polynomial p41(p4.begin(), p4.end());
+    std::vector<std::pair<power, coeff>> p3({{2, 1}, {1, 2}, {0, 1}});
+    std::vector<std::pair<power, coeff>> p4({{1, 1}, {0, 1}});
+    std::vector<std::pair<power, coeff>> expected({{0, 0}});
+    polynomial p31(p3.begin(), p3.end());
+    polynomial p41(p4.begin(), p4.end());
 
-    // result = p31 % p41;
-    // // result.print();
-    // assert(result.canonical_form() == expected);
+    result1 = p31 % p41;
+    result1.print();
+    assert(result1.canonical_form() == expected);
    
     // std::vector<std::pair<power, coeff>> p5({{2, 1}, {1, 2}, {0, 1}});
     // std::vector<std::pair<power, coeff>> p6({{2, 1}, {1, 2}, {0, 1}});

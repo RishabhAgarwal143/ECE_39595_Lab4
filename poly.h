@@ -1,4 +1,3 @@
-
 #ifndef POLY_H
 #define POLY_H
 
@@ -6,6 +5,9 @@
 #include <utility>
 #include <cstddef>
 #include <algorithm>
+#include <set>
+#include <unordered_map>
+#include <thread>
 
 using power = size_t;
 using coeff = int;
@@ -14,6 +16,9 @@ class polynomial
 {
 public:
     std::vector<std::pair<power, coeff>> poly;
+    std::set<int> powers_in_hash;
+    std::unordered_map<int,int> polynomial_map;
+
     /**
      * @brief Construct a new polynomial object that is the number 0 (ie. 0x^0)
      *
@@ -32,6 +37,9 @@ public:
      */
     template <typename Iter>
     polynomial(Iter begin, Iter end);
+
+
+    polynomial(std::set<int> power_set,std::unordered_map<int,int> coeff_map);
 
     /**
      * @brief Construct a new polynomial object from an existing polynomial object
