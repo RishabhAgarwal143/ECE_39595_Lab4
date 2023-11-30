@@ -118,6 +118,8 @@ static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &se
     polynomial p1 = first;
     polynomial p2 = second;
     polynomial out;
+    out.powers_in_hash.clear();
+    out.polynomial_map.clear();
 
     // iterate through p1 and p2 sets and multply each term corresponding to the power
     for (auto it1 = begin; it1 != end; it1++)
@@ -125,10 +127,12 @@ static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &se
         for (auto it2 = p2.powers_in_hash.begin(); it2 != p2.powers_in_hash.end(); it2++)
         {
             out.powers_in_hash.insert(*it1 + *it2);
-            if(*it1 + *it2 == 0) {
-                out.polynomial_map.at(0) = p1.polynomial_map.at(*it1) * p2.polynomial_map.at(*it2);
+            if (out.polynomial_map.find(*it1 + *it2) != out.polynomial_map.end())
+            {
+                out.polynomial_map.at(*it1 + *it2) += p1.polynomial_map.at(*it1) * p2.polynomial_map.at(*it2);
             }
-            else{
+            else
+            {
                 out.polynomial_map.insert({*it1 + *it2, p1.polynomial_map.at(*it1) * p2.polynomial_map.at(*it2)});
             }
         }
@@ -144,21 +148,17 @@ polynomial polynomial::operator*(const polynomial &other) const
 
     polynomial p1 = *this;
     polynomial p2 = other;
-    auto remp = p2.powers_in_hash.begin();
-    std::cout << *remp << "\n";
     int size = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? p2.powers_in_hash.size() : p1.powers_in_hash.size();
     bool p1_bigger = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? false : true;
-
-    int num_threads =8;
-    if (size < 8)
+    // return _multi(p1.powers_in_hash.begin(),p1.powers_in_hash.end(),p1,p2,8);
+    int num_threads =32;
+    if (size < num_threads)
     {
         num_threads = size;
     }
 
     int num_elements_per_thread = size / num_threads;
-    printf("num_elements_per_thread: %d\n", num_elements_per_thread);
     int num_elements_last_thread = size % num_threads;
-    printf("num_elements_last_thread: %d\n", num_elements_last_thread);
 
     polynomial result_poly;
     std::mutex result_mutex;
@@ -175,7 +175,7 @@ polynomial polynomial::operator*(const polynomial &other) const
     std::vector<std::thread> threads;
     for(int i = 0; i < num_threads-1; i++){
         auto start = iter;
-        std::next(iter,num_elements_per_thread);
+        iter  = std::next(iter,num_elements_per_thread);
         auto end = iter;
 
         if (p1_bigger) {
