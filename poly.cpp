@@ -2,7 +2,6 @@
 #include <iostream>
 #include <mutex>
 
-
 polynomial::polynomial()
 {
     this->powers_in_hash.insert(0);
@@ -55,10 +54,11 @@ polynomial::polynomial(const polynomial &other)
 void polynomial::print() const
 {
     auto iter = this->powers_in_hash.end();
-    for (int ele = this->powers_in_hash.size() -1  ; ele >= 0; ele--)
+    for (int ele = this->powers_in_hash.size() - 1; ele >= 0; ele--)
     {
         iter--;
-        if(this->polynomial_map.at(*iter) == 0){
+        if (this->polynomial_map.at(*iter) == 0)
+        {
             continue;
         }
         std::cout << this->polynomial_map.at(*iter) << "x^" << *iter << " + ";
@@ -91,6 +91,9 @@ polynomial polynomial::operator+(const polynomial &other) const
         {
             p1.polynomial_map.at(elem) += other.polynomial_map.at(elem);
         }
+        if(p1.polynomial_map.at(elem) == 0){
+            p1.powers_in_hash.erase(elem);
+        }
     }
     return p1;
 }
@@ -112,9 +115,10 @@ polynomial polynomial::operator+(const int other) const
 }
 
 template <typename Iter>
-static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &second,int i) {
+static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &second)
+{
 
-    // multiply bw begin end  
+    // multiply bw begin end
     polynomial p1 = first;
     polynomial p2 = second;
     polynomial out;
@@ -150,82 +154,87 @@ polynomial polynomial::operator*(const polynomial &other) const
     polynomial p2 = other;
     int size = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? p2.powers_in_hash.size() : p1.powers_in_hash.size();
     bool p1_bigger = p1.powers_in_hash.size() < p2.powers_in_hash.size() ? false : true;
-    // return _multi(p1.powers_in_hash.begin(),p1.powers_in_hash.end(),p1,p2,8);
     int num_threads;
-    if (size < 100)
+    if (size < 160)
     {
-        return _multi(this->powers_in_hash.begin(),this->powers_in_hash.end(),p1,p2,9);
+        return _multi(this->powers_in_hash.begin(), this->powers_in_hash.end(), p1, p2);
     }
-    else{
-        num_threads =size/100;
+    else
+    {
+        num_threads =  8;
     }
 
     int num_elements_per_thread = size / num_threads;
     int num_elements_last_thread = size % num_threads;
 
     polynomial result_poly;
-    std::mutex result_mutex;
-
     std::mutex mu;
+    
     auto iter = p1.powers_in_hash.cbegin();
     auto end = p1.powers_in_hash.cend();
 
-    if (!p1_bigger) {
+    if (!p1_bigger)
+    {
         iter = p2.powers_in_hash.cbegin();
         end = p2.powers_in_hash.cend();
-    } 
+    }
 
     std::vector<std::thread> threads;
-    for(int i = 0; i < num_threads-1; i++){
+    for (int i = 0; i < num_threads - 1; i++)
+    {
         auto start = iter;
-        iter  = std::next(iter,num_elements_per_thread);
+        iter = std::next(iter, num_elements_per_thread);
         auto end = iter;
 
-        if (p1_bigger) {
-            threads.emplace_back([&i, &result_poly, &result_mutex, start, end, &p1, &p2, &mu]() {
-                auto temp_result = _multi(start, end, p1, p2,i);
+        if (p1_bigger)
+        {
+            threads.emplace_back([ &result_poly, start, end, &p1, &p2, &mu]()
+                                 {
+                auto temp_result = _multi(start, end, p1, p2);
                 mu.lock();
                 result_poly = result_poly + temp_result;
-                mu.unlock();
-            });
-        } else {
-            threads.emplace_back([&i, &result_poly, &result_mutex, start, end, &p1, &p2, &mu]() {
-                auto temp_result = _multi(start, end, p2, p1,i);
-                mu.lock();
-                result_poly = result_poly + temp_result;
-                mu.unlock();
-            });
+                mu.unlock(); });
         }
-
+        else
+        {
+            threads.emplace_back([&result_poly, start, end, &p1, &p2, &mu]()
+                                 {
+                auto temp_result = _multi(start, end, p2, p1);
+                mu.lock();
+                result_poly = result_poly + temp_result;
+                mu.unlock(); });
+        }
     }
     auto start = iter;
-    if (p1_bigger) {
-            threads.emplace_back([&result_poly, &result_mutex, start, end, &p1, &p2, &mu]() {
-                auto temp_result = _multi(start, end, p1, p2,8);
+    if (p1_bigger)
+    {
+        threads.emplace_back([&result_poly, start, end, &p1, &p2, &mu]()
+                             {
+                auto temp_result = _multi(start, end, p1, p2);
                 mu.lock();
                 result_poly = result_poly + temp_result;
-                mu.unlock();
-            });
-        } else {
-            threads.emplace_back([ &result_poly, &result_mutex, start, end, &p1, &p2, &mu]() {
-                auto temp_result = _multi(start, end, p2, p1,8);
+                mu.unlock(); });
+    }
+    else
+    {
+        threads.emplace_back([&result_poly, start, end, &p1, &p2, &mu]()
+                             {
+                auto temp_result = _multi(start, end, p2, p1);
                 mu.lock();
                 result_poly = result_poly + temp_result;
-                mu.unlock();
-            });
-        }
+                mu.unlock(); });
+    }
 
-    for(auto &t : threads){
+    for (auto &t : threads)
+    {
         t.join();
     }
 
     return result_poly;
-
 }
 
 polynomial polynomial::operator*(const int other) const
 {
-
     if (other == 0)
     {
         polynomial p1;
@@ -237,6 +246,7 @@ polynomial polynomial::operator*(const int other) const
         p1.polynomial_map.at(i) *= other;
     }
     return p1;
+    
 }
 
 polynomial operator*(const int val, const polynomial &other)
@@ -256,13 +266,11 @@ polynomial polynomial::operator%(const polynomial &divisor) const
     polynomial divisor1 = divisor;
     auto div_iter = divisor1.powers_in_hash.end();
     div_iter--;
-    auto rem_iter = rem.powers_in_hash.end();
-    rem_iter--;
     while (rem.find_degree_of() != 0 && (rem.find_degree_of() >= divisor1.find_degree_of()))
     {
-
-        power powerDiff = rem.polynomial_map.at(rem.find_degree_of()) - *div_iter;
-        coeff coeffDiff = rem.polynomial_map.at(*rem_iter) / divisor1.polynomial_map.at(*div_iter);
+        printf("Heyu\n");
+        power powerDiff = rem.find_degree_of()- *div_iter;
+        coeff coeffDiff = rem.polynomial_map.at(rem.find_degree_of()) / divisor1.polynomial_map.at(*div_iter);
 
         auto tPair = std::make_pair(powerDiff, coeffDiff);
         std::vector<std::pair<power, coeff>> tVec = {tPair};
@@ -271,8 +279,7 @@ polynomial polynomial::operator%(const polynomial &divisor) const
         q = q + tPoly;
 
         rem = rem + ((tPoly * divisor1) * (-1));
-        rem_iter = rem.powers_in_hash.end();
-        rem_iter--;
+        // break;
     }
 
     return rem;
@@ -281,7 +288,10 @@ polynomial polynomial::operator%(const polynomial &divisor) const
 size_t polynomial::find_degree_of()
 {
     auto iter = this->powers_in_hash.end();
-    iter--;
+    if(iter != this->powers_in_hash.begin())
+    {
+        iter--;
+    }
     return *iter;
 }
 
@@ -289,10 +299,13 @@ std::vector<std::pair<power, coeff>> polynomial::canonical_form() const
 {
     std::vector<std::pair<power, coeff>> poly;
     auto iter = this->powers_in_hash.end();
-    for (int ele = this->powers_in_hash.size() -1  ; ele >= 0; ele--)
+    polynomial dummy;
+
+    for (int ele = this->powers_in_hash.size() - 1; ele >= 0; ele--)
     {
         iter--;
-        if(this->polynomial_map.at(*iter) == 0){
+        if (this->polynomial_map.at(*iter) == 0)
+        {
             continue;
         }
         poly.push_back(std::make_pair(*iter, this->polynomial_map.at(*iter)));

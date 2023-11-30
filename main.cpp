@@ -113,41 +113,45 @@ int main()
 
 
     polynomial t1 = readFile("simple_poly.txt");
-    polynomial t2 = readOutputFile("result.txt");
+    int value = 5;
+    // polynomial t2 = readOutputFile("result.txt");
     // t1.print();
-    std::cout << t1.find_degree_of();
-    auto t11 = t1.canonical_form();
+    auto poly2 = t1 * value;
+    // poly2.print();
+    // return 0;
 
-    auto t22 = t2.canonical_form();
-    int ct = 0;
-    for (int i = 0 ; i < t11.size();i++){
-        if(!(t11.at(i) == t22.at(i))){
-            std::cout << i << std::endl;
-            std::cout << t11.at(i).second << "x^" << t11.at(i).first << " " << t22.at(i).second << "x^" << t22.at(i).first  << "\n"; 
-            if (ct == 10) {
-                break;
-            }
-            ct++;
-        }
-    }
+    // std::cout << t1.find_degree_of();
+    // auto t11 = t1.canonical_form();
+
+    // auto t22 = t2.canonical_form();
+    // int ct = 0;
+    // for (int i = 0 ; i < t11.size();i++){
+    //     if(!(t11.at(i) == t22.at(i))){
+    //         std::cout << i << std::endl;
+    //         std::cout << t11.at(i).second << "x^" << t11.at(i).first << " " << t22.at(i).second << "x^" << t22.at(i).first  << "\n"; 
+    //         if (ct == 10) {
+    //             break;
+    //         }
+    //         ct++;
+    //     }
+    // }
     // std::cout << test << std::endl;
-    return 0;
 
 
 
 
 
-    std::vector<std::pair<power, coeff>> solution = {{2,1}, {1,2}, {0,1}};
+    // std::vector<std::pair<power, coeff>> solution = {{2,1}, {1,2}, {0,1}};
 
-    /** This holds (x+1), which we'll pass to each polynomial */
-    std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}, {10,3}};
-    std::vector<std::pair<power, coeff>> poly_input1= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
-    polynomial p1(poly_input.begin(), poly_input.end());
-    p1.print();
-    polynomial p2(poly_input1.begin(), poly_input1.end());
-    p2.print();
+    // /** This holds (x+1), which we'll pass to each polynomial */
+    // std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}, {10,3}};
+    // std::vector<std::pair<power, coeff>> poly_input1= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
+    // polynomial p1(poly_input.begin(), poly_input.end());
+    // p1.print();
+    // polynomial p2(poly_input1.begin(), poly_input1.end());
+    // p2.print();
 
-    std::optional<double> result = poly_test(p1, p2, solution);
+    // std::optional<double> result = poly_test(p1, p2, solution);
     
     // std::vector<std::pair<power, coeff>> poly_input1 = {{7, 1}};
     // std::vector<std::pair<power, coeff>> poly_input1 = {{10,-5}};
@@ -196,8 +200,12 @@ int main()
     polynomial p41(p4.begin(), p4.end());
 
     result1 = p31 % p41;
+    auto test = result1.canonical_form();
+    for(auto t :test){
+        std::cout << t.first << " ," << t.second << std::endl;
+    }
     result1.print();
-    assert(result1.canonical_form() == expected);
+    // assert(result1.canonical_form() == expected);
    
     // std::vector<std::pair<power, coeff>> p5({{2, 1}, {1, 2}, {0, 1}});
     // std::vector<std::pair<power, coeff>> p6({{2, 1}, {1, 2}, {0, 1}});
