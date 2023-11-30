@@ -4,8 +4,6 @@
 
 polynomial::polynomial()
 {
-    this->powers_in_hash.insert(0);
-    this->polynomial_map.insert({0, 0});
 }
 
 template <typename Iter>
@@ -14,8 +12,6 @@ polynomial::polynomial(Iter begin, Iter end)
 
     if (begin == end)
     {
-        this->powers_in_hash.insert(0);
-        this->polynomial_map.insert({0, 0});
         return;
     }
     while (begin->second == 0 && begin != end)
@@ -24,8 +20,6 @@ polynomial::polynomial(Iter begin, Iter end)
     }
     if (begin == end)
     {
-        this->powers_in_hash.insert(0);
-        this->polynomial_map.insert({0, 0});
         return;
     }
     this->powers_in_hash.insert(begin->first);
@@ -119,9 +113,6 @@ template <typename Iter>
 static polynomial _multi(Iter begin, Iter end,const polynomial &first,const polynomial &second)
 {
 
-    // multiply bw begin end
-    // polynomial p1 = first;
-    // polynomial p2 = second;
     polynomial out;
     out.powers_in_hash.clear();
     out.polynomial_map.clear();
@@ -154,12 +145,12 @@ polynomial polynomial::operator*(const polynomial &other) const
     int num_threads;
     if (size < 200)
     {
-        if(p1_bigger){
+        // if(p1_bigger){
             return _multi(this->powers_in_hash.begin(), this->powers_in_hash.end(), *this, other);
-        }
-        else{
-            return _multi(this->powers_in_hash.begin(), this->powers_in_hash.end(), other, *this);
-        }
+        // }
+        // else{
+        //     return _multi(other.powers_in_hash.begin(), other.powers_in_hash.end(), other, *this);
+        // }
     }
     else
     {
@@ -182,7 +173,6 @@ polynomial polynomial::operator*(const polynomial &other) const
     }
 
     std::vector<std::thread> threads;
-    for (int i = 0; i < num_threads-1; i++)
     {
         auto start = iter;
         iter = std::next(iter, num_elements_per_thread);
@@ -210,26 +200,26 @@ polynomial polynomial::operator*(const polynomial &other) const
     auto start = iter;
     if (p1_bigger)
     {
-        auto temp_result = _multi(start, end, *this, other);
-        mu.lock();
-        result_poly = result_poly + temp_result;
-        mu.unlock();
-        // threads.emplace_back([&result_poly, start, end, &p1, &p2, &mu]()
-        //                      {
-        //         auto temp_result = _multi(start, end, p1, p2);
-        //         mu.lock();
-        //         result_poly = result_poly + temp_result;
-        //         mu.unlock(); });
+        // auto temp_result = _multi(start, end, *this, other);
+        // mu.lock();
+        // result_poly = result_poly + temp_result;
+        // mu.unlock();
+        threads.emplace_back([&result_poly, start, end, *this, other, &mu]()
+                             {
+                auto temp_result = _multi(start, end, *this, other);
+                mu.lock();
+                result_poly = result_poly + temp_result;
+                mu.unlock(); });
     }
     else
     {
-        // threads.emplace_back([&result_poly, start, end, &p1, &p2, &mu]()
-        //                      {
+        threads.emplace_back([&result_poly, start, end, other, *this, &mu]()
+                             {
         auto temp_result = _multi(start, end, other,*this);
         mu.lock();
         result_poly = result_poly + temp_result;
         mu.unlock(); 
-                // });
+                });
     }
 
     for (auto &t : threads)
@@ -271,21 +261,19 @@ polynomial polynomial::operator%(const polynomial &divisor) const
     polynomial rem = *this;
     polynomial q;
     polynomial divisor1 = divisor;
-    auto div_iter = divisor1.powers_in_hash.end();
-    div_iter--;
+    // auto div_iter = divisor1.powers_in_hash.end();
+    // div_iter--;
     while (rem.find_degree_of() != 0 && (rem.find_degree_of() >= divisor1.find_degree_of()))
     {
-        // printf("Heyu\n");
-        power powerDiff = rem.find_degree_of()- *div_iter;
-        coeff coeffDiff = rem.polynomial_map.at(rem.find_degree_of()) / divisor1.polynomial_map.at(*div_iter);
+        printf("%ld , %ld \n", rem.find_degree_of(),divisor1.find_degree_of());
+        power powerDiff = rem.find_degree_of()- divisor1.find_degree_of();
+        coeff coeffDiff = rem.polynomial_map.at(rem.find_degree_of()) / divisor1.polynomial_map.at(divisor1.find_degree_of());
 
         auto tPair = std::make_pair(powerDiff, coeffDiff);
         std::vector<std::pair<power, coeff>> tVec = {tPair};
         polynomial tPoly = polynomial(tVec.begin(), tVec.end());
-
-        q = q + tPoly;
-
-        rem = rem + ((tPoly * divisor1) * (-1));
+        // q = q + tPoly;
+        rem = rem + ((divisor1 * tPoly) * (-1));
         break;
     }
 
