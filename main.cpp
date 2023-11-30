@@ -6,86 +6,79 @@
 #include <string.h>
 #include "poly.h"
 
-polynomial readOutputFile(char* filename) {
+polynomial readOutputFile(std::string filename) {
     polynomial p1;
 
-    FILE *fp = fopen(filename, "r");
+    FILE *fp = fopen(filename.c_str(), "r");
     if (fp == NULL)
     {
         printf("Error opening file!\n");
         exit(1);
     }
 
-    // every line has a power and coeff in this format 463x^9997
-    // read in this format till semicolon
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    int i = 0;
-    while ((read = getline(&line, &len, fp)) != -1)
+    int coeff;
+    int power;
+
+    // fscanf till semicolon
+    while (fscanf(fp, "%dx^%d;", &coeff, &power) == 2)
     {
-        if (line[0] == ';')
+
+        if (power == 0)
         {
-            break;
+            p1.polynomial_map.at(power) = coeff;
+            p1.powers_in_hash.insert(power);
+            continue;
         }
-        char *token = strtok(line, "x^");
-        int coeff = atoi(token);
-        token = strtok(NULL, "x^");
-        int power = atoi(token);
         p1.powers_in_hash.insert(power);
         p1.polynomial_map.insert({power, coeff});
     }
-
-    return p1;    
+    p1.print();
+    return p1;
 }
 
-polynomial readFile(char* filename) {
+polynomial readFile(std::string filename) {
     // read simple poly.txt till semicolon then rest of the file is poly2
     polynomial p1;
     polynomial p2;
 
-    FILE *fp = fopen(filename, "r");
+    FILE *fp = fopen(filename.c_str(), "r");
     if (fp == NULL)
     {
         printf("Error opening file!\n");
         exit(1);
     }
 
-    // every line has a power and coeff in this format 463x^9997
-    // read in this format till semicolon
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    int i = 0;
-    while ((read = getline(&line, &len, fp)) != -1)
+    int coeff;
+    int power;
+
+    // fscanf till semicolon
+    while (fscanf(fp, "%dx^%d;", &coeff, &power) == 2)
     {
-        if (line[0] == ';')
+
+        if (power == 0)
         {
-            break;
+            p1.polynomial_map.at(power) = coeff;
+            p1.powers_in_hash.insert(power);
+            continue;
         }
-        char *token = strtok(line, "x^");
-        int coeff = atoi(token);
-        token = strtok(NULL, "x^");
-        int power = atoi(token);
         p1.powers_in_hash.insert(power);
         p1.polynomial_map.insert({power, coeff});
     }
 
-    // read the rest of the file in the same format
-    while ((read = getline(&line, &len, fp)) != -1)
-    {
-        char *token = strtok(line, "x^");
-        int coeff = atoi(token);
-        token = strtok(NULL, "x^");
-        int power = atoi(token);
+    // move cursor by 1;
+    fseek(fp, 1, SEEK_CUR);
+
+    while (fscanf(fp, "%dx^%d;", &coeff, &power) == 2) {
+        if (power == 0)
+        {
+            p2.polynomial_map.at(power) = coeff;
+            p2.powers_in_hash.insert(power);
+        }
         p2.powers_in_hash.insert(power);
         p2.polynomial_map.insert({power, coeff});
     }
+    // p2.print();
 
-    fclose(fp);
-    if (line)
-        free(line);
-    
     return p1 * p2;
 }
 
@@ -121,6 +114,7 @@ int main()
     polynomial t2 = readOutputFile("result.txt");
     bool test = t1.canonical_form() == t2.canonical_form();
     std::cout << test << std::endl;
+    return 0;
 
 
 
