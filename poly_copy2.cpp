@@ -103,13 +103,16 @@ polynomial polynomial::operator+(const int other) const
     return p1;
 }
 
-static polynomial polynomial::_multi(const polynomial &other) const {
-    polynomial p1 = *this;
-    polynomial p2 = other;
+template <typename Iter>
+static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &second) {
+
+    // multiply bw begin end  
+    polynomial p1 = first;
+    polynomial p2 = second;
     polynomial out;
 
     // iterate through p1 and p2 sets and multply each term corresponding to the power
-    for (auto it1 = p1.powers_in_hash.begin(); it1 != p1.powers_in_hash.end(); it1++)
+    for (auto it1 = begin; it1 != end; it1++)
     {
         for (auto it2 = p2.powers_in_hash.begin(); it2 != p2.powers_in_hash.end(); it2++)
         {
