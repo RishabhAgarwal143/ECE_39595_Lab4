@@ -113,10 +113,10 @@ int main()
 
 
     polynomial t1 = readFile("simple_poly.txt");
-    int value = 5;
-    // polynomial t2 = readOutputFile("result.txt");
-    // t1.print();
-    auto poly2 = t1 * value;
+    // int value = 5;
+    polynomial t2 = readOutputFile("result.txt");
+    std::cout << bool(t1.canonical_form() ==t2.canonical_form());
+    // auto poly2 = t1 * value;
     // poly2.print();
     // return 0;
 
@@ -205,7 +205,7 @@ int main()
         std::cout << t.first << " ," << t.second << std::endl;
     }
     result1.print();
-    // assert(result1.canonical_form() == expected);
+    assert(result1.canonical_form() == expected);
    
     // std::vector<std::pair<power, coeff>> p5({{2, 1}, {1, 2}, {0, 1}});
     // std::vector<std::pair<power, coeff>> p6({{2, 1}, {1, 2}, {0, 1}});
