@@ -103,6 +103,23 @@ polynomial polynomial::operator+(const int other) const
     return p1;
 }
 
+static polynomial polynomial::_multi(const polynomial &other) const {
+    polynomial p1 = *this;
+    polynomial p2 = other;
+    polynomial out;
+
+    // iterate through p1 and p2 sets and multply each term corresponding to the power
+    for (auto it1 = p1.powers_in_hash.begin(); it1 != p1.powers_in_hash.end(); it1++)
+    {
+        for (auto it2 = p2.powers_in_hash.begin(); it2 != p2.powers_in_hash.end(); it2++)
+        {
+            out.powers_in_hash.insert(*it1 + *it2);
+            out.polynomial_map.insert({*it1 + *it2, p1.polynomial_map.at(*it1) * p2.polynomial_map.at(*it2)});
+        }
+    }
+    return out;
+}
+
 polynomial polynomial::operator*(const polynomial &other) const
 {
 
