@@ -119,8 +119,12 @@ static polynomial _multi(Iter begin, Iter end, polynomial &first, polynomial &se
         for (auto it2 = p2.powers_in_hash.begin(); it2 != p2.powers_in_hash.end(); it2++)
         {
             out.powers_in_hash.insert(*it1 + *it2);
-            printf("i %d power: %d , %d\n",i, *it1 , *it2);
-            out.polynomial_map.insert({*it1 + *it2, p1.polynomial_map.at(*it1) * p2.polynomial_map.at(*it2)});
+            if(*it1 + *it2 == 0) {
+                out.polynomial_map.at(0) = p1.polynomial_map.at(*it1) * p2.polynomial_map.at(*it2);
+            }
+            else{
+                out.polynomial_map.insert({*it1 + *it2, p1.polynomial_map.at(*it1) * p2.polynomial_map.at(*it2)});
+            }
         }
     }
     return out;
@@ -160,12 +164,15 @@ polynomial polynomial::operator*(const polynomial &other) const
 
     std::mutex mu;
     auto iter = p1.powers_in_hash.cbegin();
+    auto end = p1.powers_in_hash.cend();
+
     if (!p1_bigger) {
-        auto iter = p2.powers_in_hash.cbegin();
+        iter = p2.powers_in_hash.cbegin();
+        end = p2.powers_in_hash.cend();
     } 
 
     std::vector<std::thread> threads;
-    for(int i = 0; i < num_threads; i++){
+    for(int i = 0; i < num_threads-1; i++){
         auto start = iter;
         std::advance(iter,num_elements_per_thread);
         auto end = iter;
@@ -187,14 +194,13 @@ polynomial polynomial::operator*(const polynomial &other) const
         }
 
     }
-    // auto start = iter;
-    // auto end = this->powers_in_hash.cend();
-    // threads.emplace_back([&result_poly, &result_mutex, start, end, &p1, &p2, &mu]() {
-    //         auto temp_result = _multi(start, end, p1, p2);
-    //         mu.lock();
-    //         result_poly = result_poly + temp_result;
-    //         mu.unlock();
-    //     });
+    auto start = iter;
+    threads.emplace_back([&result_poly, &result_mutex, start, end, &p1, &p2, &mu]() {
+            auto temp_result = _multi(start, end, p1, p2,8);
+            mu.lock();
+            result_poly = result_poly + temp_result;
+            mu.unlock();
+        });
 
     for(auto &t : threads){
         t.join();
