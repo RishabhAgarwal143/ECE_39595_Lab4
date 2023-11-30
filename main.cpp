@@ -143,13 +143,14 @@ int main()
     // std::vector<std::pair<power, coeff>> solution = {{2,1}, {1,2}, {0,1}};
 
     // /** This holds (x+1), which we'll pass to each polynomial */
-    // std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}, {10,3}};
-    // std::vector<std::pair<power, coeff>> poly_input1= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
-    // polynomial p1(poly_input.begin(), poly_input.end());
-    // p1.print();
-    // polynomial p2(poly_input1.begin(), poly_input1.end());
-    // p2.print();
-
+    std::vector<std::pair<power, coeff>> poly_input = {{1,2}, {0,2}, {10,3}};
+    std::vector<std::pair<power, coeff>> poly_input1= {{{10,5}, {0,2}, {4, -6}, {3, 8}, {5, 1}, {6, -5}, {2, 3}}};
+    polynomial p1(poly_input.begin(), poly_input.end());
+    p1.canonical_form();
+    polynomial p2(poly_input1.begin(), poly_input1.end());
+    p2.canonical_form();
+    auto p3 = p1+p2;
+    p3.canonical_form();
     // std::optional<double> result = poly_test(p1, p2, solution);
     
     // std::vector<std::pair<power, coeff>> poly_input1 = {{7, 1}};

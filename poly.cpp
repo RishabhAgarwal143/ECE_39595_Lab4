@@ -285,11 +285,13 @@ std::vector<std::pair<power, coeff>> polynomial::canonical_form() const
     // for(auto)
     std::vector<std::pair<power, coeff>> poly;
 
-    for (auto ele = map.end(); ele != map.begin(); ele--)
+    auto ele = map.end();
+    while(ele != map.begin())
     {
+        ele--;
         poly.push_back(std::make_pair(ele->first, ele->second));
     }
-    poly.push_back(std::make_pair(map.begin()->first, map.begin()->second));
+    // poly.push_back(std::make_pair(map.begin()->first, map.begin()->second));
     if (poly.empty())
     {
         poly.push_back(std::make_pair(0, 0));
