@@ -85,8 +85,8 @@ polynomial polynomial::operator+(const polynomial &other) const
             }
             else
             {
-                p1.polynomial_map.at(elem.first) += elem.second;
-                if (p1.polynomial_map.at(elem.first) == 0)
+                p1.polynomial_map[elem.first] += elem.second;
+                if (p1.polynomial_map[elem.first] == 0)
                 {
                     p1.polynomial_map.erase(elem.first);
                     continue;
@@ -109,8 +109,8 @@ polynomial polynomial::operator+(const polynomial &other) const
             }
             else
             {
-                p1.polynomial_map.at(elem.first) += elem.second;
-                if (p1.polynomial_map.at(elem.first) == 0)
+                p1.polynomial_map[elem.first] += elem.second;
+                if (p1.polynomial_map[elem.first] == 0)
                 {
                     p1.polynomial_map.erase(elem.first);
                     continue;
@@ -157,21 +157,21 @@ polynomial polynomial::operator*(const polynomial &other) const
     int size = this->polynomial_map.size() < other.polynomial_map.size() ? other.polynomial_map.size() : this->polynomial_map.size();
     bool p1_bigger = this->polynomial_map.size() < other.polynomial_map.size() ? false : true;
     int num_threads;
-    if (size < 150)
+    if (size < 160)
     {
         polynomial out;
         for (auto it1 = this->polynomial_map.begin(); it1 != this->polynomial_map.end(); it1++)
         {
             for (auto it2 = other.polynomial_map.begin(); it2 != other.polynomial_map.end(); it2++)
             {
-                if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
-                {
-                    out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
-                }
-                else
-                {
-                    out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
-                }
+                out.polynomial_map[it1->first + it2->first] += it1->second * it2->second;
+                // if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
+                // {
+                // }
+                // else
+                // {
+                //     out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
+                // }
             }
         }
         out.degree = this->degree + other.degree;
@@ -217,14 +217,14 @@ polynomial polynomial::operator*(const polynomial &other) const
                 {
                     for (auto it2 = other.polynomial_map.begin(); it2 != other.polynomial_map.end(); it2++)
                     {
-                        if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
-                        {
-                            out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
-                        }
-                        else
-                        {
-                            out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
-                        }
+                        out.polynomial_map[it1->first + it2->first] += it1->second * it2->second;
+                        // if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
+                        // {
+                        // }
+                        // else
+                        // {
+                        //     out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
+                        // }
                     }
                 }
                 mu.lock();
@@ -240,14 +240,14 @@ polynomial polynomial::operator*(const polynomial &other) const
                 {
                     for (auto it2 = this->polynomial_map.begin(); it2 != this->polynomial_map.end(); it2++)
                     {
-                        if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
-                        {
-                            out.polynomial_map.at(it1->first + it2->first) += it1->second * it2->second;
-                        }
-                        else
-                        {
-                            out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
-                        }
+                        out.polynomial_map[it1->first + it2->first] += it1->second * it2->second;
+                        // if (out.polynomial_map.find(it1->first + it2->first) != out.polynomial_map.end())
+                        // {
+                        // }
+                        // else
+                        // {
+                        //     out.polynomial_map.insert({it1->first + it2->first, it1->second * it2->second});
+                        // }
                     }
                 }
                 
@@ -256,24 +256,6 @@ polynomial polynomial::operator*(const polynomial &other) const
                 mu.unlock(); });
         }
     }
-    // auto start = iter;
-    // if (start != end1) {
-    //     std::cout << "running outside\n";
-    //     if (p1_bigger)
-    //     {
-    //         auto temp_result = _multi(start, end1, other);
-    //         mu.lock();
-    //         result_poly = result_poly + temp_result;
-    //         mu.unlock();
-    //     }
-    //     else
-    //     {
-    //         auto temp_result = _multi(start, end1, *this);
-    //         mu.lock();
-    //         result_poly = result_poly + temp_result;
-    //         mu.unlock();
-    //     }
-    // }
 
     for (auto &t : threads)
     {
